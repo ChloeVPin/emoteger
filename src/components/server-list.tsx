@@ -1,0 +1,67 @@
+import Link from "next/link";
+import type { GuildSummary } from "@/lib/types";
+import { GuildIcon } from "./avatar";
+import { ArrowRightIcon, ArrowUpRightIcon } from "./icons";
+
+const group = "rounded-[18px] bg-surface p-1.5";
+const row = "flex h-11 min-w-0 items-center gap-3 rounded-concentric pr-2 pl-1.5";
+
+export function ServerList({ guilds, inviteUrl }: { guilds: GuildSummary[]; inviteUrl: (id: string) => string }) {
+  if (guilds.length === 0) {
+    return <p className="mt-6 text-fg-2">No servers where you can manage expressions.</p>;
+  }
+
+  const ready = guilds.filter((g) => g.botInstalled);
+  const pending = guilds.filter((g) => !g.botInstalled);
+
+  return (
+    <div className="mt-6 flex flex-col gap-7">
+      {ready.length ? (
+        <ul className={group}>
+          {ready.map((g) => (
+            <li key={g.id} className="rounded-concentric">
+              <Link
+                href={`/servers/${g.id}`}
+                className={`${row} group pressable transition-[filter,background-color] duration-150 [@media(hover:hover)]:hover:bg-hover`}
+              >
+                <GuildIcon guild={g} size={32} concentric />
+                <span dir="auto" title={g.name} className="min-w-0 flex-1 truncate text-[14px] font-medium">
+                  {g.name}
+                </span>
+                <ArrowRightIcon
+                  size={14}
+                  className="shrink-0 text-fg-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {pending.length ? (
+        <section>
+          <h2 className="mb-2 px-3 text-[12px] font-medium text-fg-3">Not added yet</h2>
+          <ul className={group}>
+            {pending.map((g) => (
+              <li key={g.id} className={row}>
+                <GuildIcon guild={g} size={32} concentric className="opacity-60 saturate-0" />
+                <span dir="auto" title={g.name} className="min-w-0 flex-1 truncate text-[14px] text-fg-2">
+                  {g.name}
+                </span>
+                <a
+                  href={inviteUrl(g.id)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="pressable inline-flex h-7 shrink-0 items-center gap-1 rounded-[7px] pr-1.5 pl-2.5 text-[12px] font-medium text-fg-2 transition-[filter,background-color,color] duration-150 [@media(hover:hover)]:hover:bg-hover [@media(hover:hover)]:hover:text-fg"
+                >
+                  Add
+                  <ArrowUpRightIcon size={13} className="text-fg-3" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </div>
+  );
+}

@@ -1,0 +1,1375 @@
+[
+  {
+    "id": "chat-classics",
+    "title": "Chat Classics",
+    "kind": "emote",
+    "tagline": "The vocabulary of Twitch chat, ready for your server.",
+    "lore": [
+      "Twitch chat built a language out of a handful of built-in emotes like Kappa and PogChamp, then extensions like BetterTTV, FrankerFaceZ and 7TV let communities upload their own. These are the ones that stuck: KEKW and OMEGALUL for laughing, monkaS for nerves, Sadge for sadness, Copium for denial.",
+      "KEKW is Spanish comedian Juan Joya Borja (“El Risitas”) laughing in a 2007 TV interview; it took off in 2019. Sadge is a 2020 edit of the 2009 “Feels Bad Man” frog. Each pick here is the version used in the most 7TV channels."
+    ],
+    "sources": [
+      {
+        "label": "Know Your Meme: KEKW",
+        "url": "https://knowyourmeme.com/memes/kekw"
+      },
+      {
+        "label": "Know Your Meme: Sadge",
+        "url": "https://knowyourmeme.com/memes/sadge"
+      },
+      {
+        "label": "Know Your Meme: monkaS",
+        "url": "https://knowyourmeme.com/memes/monkas"
+      }
+    ],
+    "items": [
+      {
+        "source": "7tv",
+        "id": "01F6NT49D8000AAS5FM9Q48AZ2",
+        "name": "KEKW",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6NT49D8000AAS5FM9Q48AZ2/2x.webp",
+        "author": "BoopisKat",
+        "page": "https://7tv.app/emotes/01F6NT49D8000AAS5FM9Q48AZ2"
+      },
+      {
+        "source": "7tv",
+        "id": "01F00Z3A9G0007E4VV006YKSK9",
+        "name": "OMEGALUL",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F00Z3A9G0007E4VV006YKSK9/2x.webp",
+        "author": "Mauriplss",
+        "page": "https://7tv.app/emotes/01F00Z3A9G0007E4VV006YKSK9"
+      },
+      {
+        "source": "7tv",
+        "id": "01F22WE74G000F9Q0G00A2DE8N",
+        "name": "LULW",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F22WE74G000F9Q0G00A2DE8N/2x.webp",
+        "author": null,
+        "page": "https://7tv.app/emotes/01F22WE74G000F9Q0G00A2DE8N"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6M3N17G000B5V5G2M2RYJN7",
+        "name": "PogU",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6M3N17G000B5V5G2M2RYJN7/2x.webp",
+        "author": "k_ekw",
+        "page": "https://7tv.app/emotes/01F6M3N17G000B5V5G2M2RYJN7"
+      },
+      {
+        "source": "7tv",
+        "id": "01EZTCN91800012PTN006Q50PR",
+        "name": "Pog",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01EZTCN91800012PTN006Q50PR/2x.webp",
+        "author": "Teyn",
+        "page": "https://7tv.app/emotes/01EZTCN91800012PTN006Q50PR"
+      },
+      {
+        "source": "7tv",
+        "id": "01GFM3R6100009YNDH1SJ0RSRP",
+        "name": "monkaS",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01GFM3R6100009YNDH1SJ0RSRP/2x.webp",
+        "author": "TrippyColour",
+        "page": "https://7tv.app/emotes/01GFM3R6100009YNDH1SJ0RSRP"
+      },
+      {
+        "source": "7tv",
+        "id": "01FHNBZRW8000C3ZWT2Z63JS92",
+        "name": "Sadge",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01FHNBZRW8000C3ZWT2Z63JS92/2x.webp",
+        "author": "Mavii",
+        "page": "https://7tv.app/emotes/01FHNBZRW8000C3ZWT2Z63JS92"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6ME7ADR0000WDA7ERT9H30R",
+        "name": "COPIUM",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6ME7ADR0000WDA7ERT9H30R/2x.webp",
+        "author": "JustRogan",
+        "page": "https://7tv.app/emotes/01F6ME7ADR0000WDA7ERT9H30R"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6T8NM9R0007M5BTFWSP1YSJ",
+        "name": "Clueless",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6T8NM9R0007M5BTFWSP1YSJ/2x.webp",
+        "author": "100mp",
+        "page": "https://7tv.app/emotes/01F6T8NM9R0007M5BTFWSP1YSJ"
+      },
+      {
+        "source": "7tv",
+        "id": "01FFWH9WV80000JT8GHDKHJNZC",
+        "name": "Aware",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01FFWH9WV80000JT8GHDKHJNZC/2x.webp",
+        "author": "MegaKill3",
+        "page": "https://7tv.app/emotes/01FFWH9WV80000JT8GHDKHJNZC"
+      },
+      {
+        "source": "7tv",
+        "id": "01FA0PBXM8000AD7Y8T9ZMTFZ5",
+        "name": "ICANT",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01FA0PBXM8000AD7Y8T9ZMTFZ5/2x.webp",
+        "author": "dor4k",
+        "page": "https://7tv.app/emotes/01FA0PBXM8000AD7Y8T9ZMTFZ5"
+      },
+      {
+        "source": "7tv",
+        "id": "01FF3R5C30000FF5VVCKV49G6J",
+        "name": "xdd",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01FF3R5C30000FF5VVCKV49G6J/2x.webp",
+        "author": "niochek_",
+        "page": "https://7tv.app/emotes/01FF3R5C30000FF5VVCKV49G6J"
+      },
+      {
+        "source": "7tv",
+        "id": "01GB4CK01800090V9B3D8CGEEX",
+        "name": "EZ",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01GB4CK01800090V9B3D8CGEEX/2x.webp",
+        "author": "TrippyColour",
+        "page": "https://7tv.app/emotes/01GB4CK01800090V9B3D8CGEEX"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6NPFQXG000AAS5FM9Q6GVCC",
+        "name": "5Head",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6NPFQXG000AAS5FM9Q6GVCC/2x.webp",
+        "author": "JustRogan",
+        "page": "https://7tv.app/emotes/01F6NPFQXG000AAS5FM9Q6GVCC"
+      },
+      {
+        "source": "7tv",
+        "id": "01EZTD6KQ800012PTN006Q50PV",
+        "name": "Pepega",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01EZTD6KQ800012PTN006Q50PV/2x.webp",
+        "author": "rupusen",
+        "page": "https://7tv.app/emotes/01EZTD6KQ800012PTN006Q50PV"
+      },
+      {
+        "source": "7tv",
+        "id": "01F7GJ0N4R00074A83FVHRDMDB",
+        "name": "Okayge",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F7GJ0N4R00074A83FVHRDMDB/2x.webp",
+        "author": "joonwi",
+        "page": "https://7tv.app/emotes/01F7GJ0N4R00074A83FVHRDMDB"
+      },
+      {
+        "source": "7tv",
+        "id": "01GG3YGWK8000DWE419062SG28",
+        "name": "Stare",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01GG3YGWK8000DWE419062SG28/2x.webp",
+        "author": "TrippyColour",
+        "page": "https://7tv.app/emotes/01GG3YGWK8000DWE419062SG28"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6MXJD8R000F76KNAAV5HDGD",
+        "name": "Bedge",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6MXJD8R000F76KNAAV5HDGD/2x.webp",
+        "author": "PARUNA",
+        "page": "https://7tv.app/emotes/01F6MXJD8R000F76KNAAV5HDGD"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6MQ33FG000FFJ97ZB8MWV52",
+        "name": "catJAM",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6MQ33FG000FFJ97ZB8MWV52/2x.webp",
+        "author": "pascii_",
+        "page": "https://7tv.app/emotes/01F6MQ33FG000FFJ97ZB8MWV52"
+      },
+      {
+        "source": "7tv",
+        "id": "01FBZESCNR000A6AWCB1X558GZ",
+        "name": "Chatting",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01FBZESCNR000A6AWCB1X558GZ/2x.webp",
+        "author": "feelsdankman_trumpet",
+        "page": "https://7tv.app/emotes/01FBZESCNR000A6AWCB1X558GZ"
+      }
+    ]
+  },
+  {
+    "id": "pepe-essentials",
+    "title": "Pepe Essentials",
+    "kind": "emote",
+    "tagline": "Every feeling, as a frog.",
+    "lore": [
+      "Pepe the Frog comes from Matt Furie’s comic Boy’s Club (2005), where his line “feels good man” spread across the internet from 2008. Edits of him became one of Twitch chat’s largest emote families, one for nearly every emotion.",
+      "His history isn’t all light: from 2015–16 he was misused by the alt-right, and Furie spent years reclaiming the character (the 2020 documentary Feels Good Man tells that story). In 2019 Hong Kong protesters adopted him as a pro-democracy symbol. Today’s chat Pepes are the everyday kind collected here."
+    ],
+    "sources": [
+      {
+        "label": "Wikipedia: Pepe the Frog",
+        "url": "https://en.wikipedia.org/wiki/Pepe_the_Frog"
+      },
+      {
+        "label": "Know Your Meme: Feels Bad Man",
+        "url": "https://knowyourmeme.com/memes/feels-bad-man-sad-frog"
+      }
+    ],
+    "items": [
+      {
+        "source": "7tv",
+        "id": "01H1CG5NCG0005EZED5J0EZCTD",
+        "name": "FeelsGoodMan",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01H1CG5NCG0005EZED5J0EZCTD/2x.webp",
+        "author": "RateNzi",
+        "page": "https://7tv.app/emotes/01H1CG5NCG0005EZED5J0EZCTD"
+      },
+      {
+        "source": "7tv",
+        "id": "01GB8HJ61R0000X4MX5ZF49QE8",
+        "name": "FeelsBadMan",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01GB8HJ61R0000X4MX5ZF49QE8/2x.webp",
+        "author": "TrippyColour",
+        "page": "https://7tv.app/emotes/01GB8HJ61R0000X4MX5ZF49QE8"
+      },
+      {
+        "source": "7tv",
+        "id": "01F604RDP8000B1Q26TYT3H5PQ",
+        "name": "FeelsStrongMan",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F604RDP8000B1Q26TYT3H5PQ/2x.webp",
+        "author": "Laden",
+        "page": "https://7tv.app/emotes/01F604RDP8000B1Q26TYT3H5PQ"
+      },
+      {
+        "source": "7tv",
+        "id": "01F022FJQ00001TJB3006SVBHM",
+        "name": "FeelsOkayMan",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F022FJQ00001TJB3006SVBHM/2x.webp",
+        "author": "MegaKill3",
+        "page": "https://7tv.app/emotes/01F022FJQ00001TJB3006SVBHM"
+      },
+      {
+        "source": "7tv",
+        "id": "01F010G3WG0007E4VV006YKSKP",
+        "name": "PepeHands",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F010G3WG0007E4VV006YKSKP/2x.webp",
+        "author": "Mauriplss",
+        "page": "https://7tv.app/emotes/01F010G3WG0007E4VV006YKSKP"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6Q76NN80005589X3BDK9CN1",
+        "name": "PepeLaugh",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6Q76NN80005589X3BDK9CN1/2x.webp",
+        "author": "mistrzu__",
+        "page": "https://7tv.app/emotes/01F6Q76NN80005589X3BDK9CN1"
+      },
+      {
+        "source": "7tv",
+        "id": "01F77AWS1G000F17N8G1S1X2F5",
+        "name": "monkaHmm",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F77AWS1G000F17N8G1S1X2F5/2x.webp",
+        "author": "Corolado",
+        "page": "https://7tv.app/emotes/01F77AWS1G000F17N8G1S1X2F5"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6ASPNM00009TPCEMWQTT4XX",
+        "name": "Madge",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6ASPNM00009TPCEMWQTT4XX/2x.webp",
+        "author": "askhp",
+        "page": "https://7tv.app/emotes/01F6ASPNM00009TPCEMWQTT4XX"
+      },
+      {
+        "source": "7tv",
+        "id": "01EZPQR1A00002RYT500A3PHPP",
+        "name": "peepoHappy",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01EZPQR1A00002RYT500A3PHPP/2x.webp",
+        "author": "widepeepoFlo",
+        "page": "https://7tv.app/emotes/01EZPQR1A00002RYT500A3PHPP"
+      },
+      {
+        "source": "7tv",
+        "id": "01GF1Y2Q5G0000BGNJSP34TQRD",
+        "name": "widepeepoHappy",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01GF1Y2Q5G0000BGNJSP34TQRD/2x.webp",
+        "author": "soda_",
+        "page": "https://7tv.app/emotes/01GF1Y2Q5G0000BGNJSP34TQRD"
+      },
+      {
+        "source": "7tv",
+        "id": "01GAZ4SBX80007YCE2RXBT44B2",
+        "name": "peepoSad",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01GAZ4SBX80007YCE2RXBT44B2/2x.webp",
+        "author": "TrippyColour",
+        "page": "https://7tv.app/emotes/01GAZ4SBX80007YCE2RXBT44B2"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6P0803G000898NRWSAKGYXT",
+        "name": "POGGERS",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6P0803G000898NRWSAKGYXT/2x.webp",
+        "author": "voidmakesvids",
+        "page": "https://7tv.app/emotes/01F6P0803G000898NRWSAKGYXT"
+      },
+      {
+        "source": "7tv",
+        "id": "01F2ZWD6CR000DSBG200DM9SGM",
+        "name": "pepeD",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F2ZWD6CR000DSBG200DM9SGM/2x.webp",
+        "author": "gentvh",
+        "page": "https://7tv.app/emotes/01F2ZWD6CR000DSBG200DM9SGM"
+      },
+      {
+        "source": "7tv",
+        "id": "01GAFTZ9K80003DHH026MC7JW0",
+        "name": "PepePls",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01GAFTZ9K80003DHH026MC7JW0/2x.webp",
+        "author": "hyru",
+        "page": "https://7tv.app/emotes/01GAFTZ9K80003DHH026MC7JW0"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6NET6G00009JYTB75QDKV1S",
+        "name": "peepoClap",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6NET6G00009JYTB75QDKV1S/2x.webp",
+        "author": "RoDrIrAnGeL2004",
+        "page": "https://7tv.app/emotes/01F6NET6G00009JYTB75QDKV1S"
+      },
+      {
+        "source": "7tv",
+        "id": "01FPPZBFCR00054ET7GQBW419Q",
+        "name": "PepoG",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01FPPZBFCR00054ET7GQBW419Q/2x.webp",
+        "author": "mistrzu__",
+        "page": "https://7tv.app/emotes/01FPPZBFCR00054ET7GQBW419Q"
+      }
+    ]
+  },
+  {
+    "id": "blobs",
+    "title": "Blobs",
+    "kind": "emote",
+    "tagline": "Google’s retired blob emoji, kept alive by Discord.",
+    "lore": [
+      "Google’s round, gummy blob emoji shipped with Android 4.4 KitKat in 2013 and were retired in Android 8.0 Oreo in 2017, replaced by circular faces for consistency across platforms.",
+      "Fans didn’t let them go: the Blobmoji project and blob-themed Discord servers kept making new ones, Google brought them back as Gboard stickers in 2018, and the community added the blobcat along the way."
+    ],
+    "sources": [
+      {
+        "label": "Wikipedia: Blob emoji",
+        "url": "https://en.wikipedia.org/wiki/Blob_emoji"
+      },
+      {
+        "label": "Emojipedia: RIP Blobs",
+        "url": "https://blog.emojipedia.org/rip-blobs-google-redesigns-emojis/"
+      }
+    ],
+    "items": [
+      {
+        "source": "emojigg",
+        "id": "928",
+        "name": "partyblob",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/partyblob.png",
+        "author": "Necrozma",
+        "page": "https://emoji.gg/emoji/partyblob"
+      },
+      {
+        "source": "emojigg",
+        "id": "817",
+        "name": "blobaww",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobaww.png",
+        "author": "Zik",
+        "page": "https://emoji.gg/emoji/blobaww"
+      },
+      {
+        "source": "emojigg",
+        "id": "3520",
+        "name": "BlobLove",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/BlobLove.png",
+        "author": "Keniisu",
+        "page": "https://emoji.gg/emoji/BlobLove"
+      },
+      {
+        "source": "emojigg",
+        "id": "186",
+        "name": "blobkiss",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobkiss.png",
+        "author": "Unknown",
+        "page": "https://emoji.gg/emoji/blobkiss"
+      },
+      {
+        "source": "emojigg",
+        "id": "317",
+        "name": "blobowo",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobowo.png",
+        "author": "Steebun",
+        "page": "https://emoji.gg/emoji/blobowo"
+      },
+      {
+        "source": "emojigg",
+        "id": "1324",
+        "name": "blobevil",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobevil.png",
+        "author": "Joeseanag24",
+        "page": "https://emoji.gg/emoji/blobevil"
+      },
+      {
+        "source": "emojigg",
+        "id": "1311",
+        "name": "blobcorn",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobcorn.png",
+        "author": "Joeseanag24",
+        "page": "https://emoji.gg/emoji/blobcorn"
+      },
+      {
+        "source": "emojigg",
+        "id": "320",
+        "name": "blobnomcookie",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobnomcookie.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/blobnomcookie"
+      },
+      {
+        "source": "emojigg",
+        "id": "3077",
+        "name": "blobhang",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/blobhang.gif",
+        "author": "Admin",
+        "page": "https://emoji.gg/emoji/blobhang"
+      },
+      {
+        "source": "emojigg",
+        "id": "888",
+        "name": "blobshake",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/blobshake.gif",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/blobshake"
+      },
+      {
+        "source": "emojigg",
+        "id": "1309",
+        "name": "blobspearpeek",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobspearpeek.png",
+        "author": "Joeseanag24",
+        "page": "https://emoji.gg/emoji/blobspearpeek"
+      },
+      {
+        "source": "emojigg",
+        "id": "1600",
+        "name": "blobhyperthink",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobhyperthink.png",
+        "author": "DefCon42",
+        "page": "https://emoji.gg/emoji/blobhyperthink"
+      },
+      {
+        "source": "emojigg",
+        "id": "4703",
+        "name": "BlobbleWobble",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/BlobbleWobble.gif",
+        "author": "Andres1991",
+        "page": "https://emoji.gg/emoji/BlobbleWobble"
+      },
+      {
+        "source": "emojigg",
+        "id": "2774",
+        "name": "BlobKittenKnife",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/BlobKittenKnife.png",
+        "author": "Joeseanag24",
+        "page": "https://emoji.gg/emoji/BlobKittenKnife"
+      },
+      {
+        "source": "emojigg",
+        "id": "834",
+        "name": "ablobaww2",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/ablobaww2.gif",
+        "author": "Zik",
+        "page": "https://emoji.gg/emoji/ablobaww2"
+      }
+    ]
+  },
+  {
+    "id": "cat-vibes",
+    "title": "Cat Vibes",
+    "kind": "emote",
+    "tagline": "Head bobs, stares and very small dances.",
+    "lore": [
+      "catJAM is a white cat (reportedly named Minette) bobbing its head to Jonas Blue’s “I Wanna Dance”, from a TikTok posted in April 2020. Cut out as a transparent emote that July, it became chat’s universal “this song slaps”.",
+      "The rest of the pack is the extended cat cinematic universe: vibing, staring, kissing and dancing cats, mixed from 7TV and emoji.gg."
+    ],
+    "sources": [
+      {
+        "label": "Know Your Meme: catJAM",
+        "url": "https://knowyourmeme.com/memes/catjam"
+      }
+    ],
+    "items": [
+      {
+        "source": "7tv",
+        "id": "01F6MQ33FG000FFJ97ZB8MWV52",
+        "name": "catJAM",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6MQ33FG000FFJ97ZB8MWV52/2x.webp",
+        "author": "pascii_",
+        "page": "https://7tv.app/emotes/01F6MQ33FG000FFJ97ZB8MWV52"
+      },
+      {
+        "source": "7tv",
+        "id": "01F5VW2TKR0003RCV2Z6JBHCST",
+        "name": "catKISS",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F5VW2TKR0003RCV2Z6JBHCST/2x.webp",
+        "author": "deadYZ",
+        "page": "https://7tv.app/emotes/01F5VW2TKR0003RCV2Z6JBHCST"
+      },
+      {
+        "source": "7tv",
+        "id": "01FNMCTHER000EJT2EVEY3EM5K",
+        "name": "Catge",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01FNMCTHER000EJT2EVEY3EM5K/2x.webp",
+        "author": "Dafne_211",
+        "page": "https://7tv.app/emotes/01FNMCTHER000EJT2EVEY3EM5K"
+      },
+      {
+        "source": "7tv",
+        "id": "01FZQ9MP4R0004H6QZ7HNGN206",
+        "name": "catVibe",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01FZQ9MP4R0004H6QZ7HNGN206/2x.webp",
+        "author": "Clarissa",
+        "page": "https://7tv.app/emotes/01FZQ9MP4R0004H6QZ7HNGN206"
+      },
+      {
+        "source": "7tv",
+        "id": "01FRHPVJQ80005RSBJP7VAF4B0",
+        "name": "catRAVE",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01FRHPVJQ80005RSBJP7VAF4B0/2x.webp",
+        "author": "uggoism",
+        "page": "https://7tv.app/emotes/01FRHPVJQ80005RSBJP7VAF4B0"
+      },
+      {
+        "source": "7tv",
+        "id": "01FJAV4EJG000FZHS49NWQRPND",
+        "name": "catDance",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01FJAV4EJG000FZHS49NWQRPND/2x.webp",
+        "author": "strictlybev",
+        "page": "https://7tv.app/emotes/01FJAV4EJG000FZHS49NWQRPND"
+      },
+      {
+        "source": "7tv",
+        "id": "01FFB4EF5G0003YBX28ZSETMA9",
+        "name": "catHug",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01FFB4EF5G0003YBX28ZSETMA9/2x.webp",
+        "author": "bodybuffalo28",
+        "page": "https://7tv.app/emotes/01FFB4EF5G0003YBX28ZSETMA9"
+      },
+      {
+        "source": "7tv",
+        "id": "01G3BNV55000068RCV6YVN340R",
+        "name": "catPls",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01G3BNV55000068RCV6YVN340R/2x.webp",
+        "author": "GrilNotaMil",
+        "page": "https://7tv.app/emotes/01G3BNV55000068RCV6YVN340R"
+      },
+      {
+        "source": "emojigg",
+        "id": "2734",
+        "name": "CatDance",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/CatDance.gif",
+        "author": "𝙔𝘽𝙉",
+        "page": "https://emoji.gg/emoji/CatDance"
+      },
+      {
+        "source": "emojigg",
+        "id": "4869",
+        "name": "bongocat",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/bongocat.gif",
+        "author": "symphonia117",
+        "page": "https://emoji.gg/emoji/bongocat"
+      },
+      {
+        "source": "emojigg",
+        "id": "3406",
+        "name": "CatHeartEyes",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/CatHeartEyes.png",
+        "author": "kelsoji",
+        "page": "https://emoji.gg/emoji/CatHeartEyes"
+      },
+      {
+        "source": "emojigg",
+        "id": "4324",
+        "name": "politecat",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/politecat.png",
+        "author": "Bety",
+        "page": "https://emoji.gg/emoji/politecat"
+      },
+      {
+        "source": "emojigg",
+        "id": "2393",
+        "name": "nyancat",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/nyancat.png",
+        "author": "ConfusedTentical",
+        "page": "https://emoji.gg/emoji/nyancat"
+      },
+      {
+        "source": "emojigg",
+        "id": "2810",
+        "name": "CattoBlush",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/CattoBlush.png",
+        "author": "𝙌𝙫𝙬",
+        "page": "https://emoji.gg/emoji/CattoBlush"
+      }
+    ]
+  },
+  {
+    "id": "hype",
+    "title": "Party & Hype",
+    "kind": "emote",
+    "tagline": "For launches, wins, and anything worth a clap.",
+    "lore": [
+      "The Party Parrot is Sirocco, a kākāpō who became famous in a 2009 BBC clip for, memorably, trying to mate with zoologist Mark Carwardine’s head. His looping head-bob became a Slack staple, and the Cult of the Party Parrot (2016) has collected hundreds of variants since, Party Blob included.",
+      "Paired here with chat’s hype regulars: clapping, dancing and the triumphant EZ."
+    ],
+    "sources": [
+      {
+        "label": "Know Your Meme: Party Parrot",
+        "url": "https://knowyourmeme.com/memes/party-parrot"
+      },
+      {
+        "label": "Cult of the Party Parrot",
+        "url": "https://cultofthepartyparrot.com/"
+      }
+    ],
+    "items": [
+      {
+        "source": "emojigg",
+        "id": "896",
+        "name": "funkyparrot",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/funkyparrot.gif",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/funkyparrot"
+      },
+      {
+        "source": "emojigg",
+        "id": "1638",
+        "name": "fast_parrot",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/fast_parrot.gif",
+        "author": "Khrome",
+        "page": "https://emoji.gg/emoji/fast_parrot"
+      },
+      {
+        "source": "emojigg",
+        "id": "3083",
+        "name": "parrotrave",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/parrotrave.gif",
+        "author": "Kami",
+        "page": "https://emoji.gg/emoji/parrotrave"
+      },
+      {
+        "source": "emojigg",
+        "id": "2465",
+        "name": "ThumbsUpParrot",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/ThumbsUpParrot.gif",
+        "author": "SpicyBigDaddy",
+        "page": "https://emoji.gg/emoji/ThumbsUpParrot"
+      },
+      {
+        "source": "emojigg",
+        "id": "928",
+        "name": "partyblob",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/partyblob.png",
+        "author": "Necrozma",
+        "page": "https://emoji.gg/emoji/partyblob"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6NE9AER000CKKT9BSDYGT0J",
+        "name": "Clap",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6NE9AER000CKKT9BSDYGT0J/2x.webp",
+        "author": "turtlemaw",
+        "page": "https://7tv.app/emotes/01F6NE9AER000CKKT9BSDYGT0J"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6NET6G00009JYTB75QDKV1S",
+        "name": "peepoClap",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6NET6G00009JYTB75QDKV1S/2x.webp",
+        "author": "RoDrIrAnGeL2004",
+        "page": "https://7tv.app/emotes/01F6NET6G00009JYTB75QDKV1S"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6NMD520000AAS5FM9QEF9ZJ",
+        "name": "HYPERS",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6NMD520000AAS5FM9QEF9ZJ/2x.webp",
+        "author": "JustRogan",
+        "page": "https://7tv.app/emotes/01F6NMD520000AAS5FM9QEF9ZJ"
+      },
+      {
+        "source": "7tv",
+        "id": "01GB4CK01800090V9B3D8CGEEX",
+        "name": "EZ",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01GB4CK01800090V9B3D8CGEEX/2x.webp",
+        "author": "TrippyColour",
+        "page": "https://7tv.app/emotes/01GB4CK01800090V9B3D8CGEEX"
+      },
+      {
+        "source": "7tv",
+        "id": "01F2ZWD6CR000DSBG200DM9SGM",
+        "name": "pepeD",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F2ZWD6CR000DSBG200DM9SGM/2x.webp",
+        "author": "gentvh",
+        "page": "https://7tv.app/emotes/01F2ZWD6CR000DSBG200DM9SGM"
+      },
+      {
+        "source": "7tv",
+        "id": "01G4M2821R000DSYZ0TDHA3ZKX",
+        "name": "RainbowPls",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01G4M2821R000DSYZ0TDHA3ZKX/2x.webp",
+        "author": "KayloGL",
+        "page": "https://7tv.app/emotes/01G4M2821R000DSYZ0TDHA3ZKX"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6M3N17G000B5V5G2M2RYJN7",
+        "name": "PogU",
+        "animated": false,
+        "preview": "https://cdn.7tv.app/emote/01F6M3N17G000B5V5G2M2RYJN7/2x.webp",
+        "author": "k_ekw",
+        "page": "https://7tv.app/emotes/01F6M3N17G000B5V5G2M2RYJN7"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6MQ33FG000FFJ97ZB8MWV52",
+        "name": "catJAM",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6MQ33FG000FFJ97ZB8MWV52/2x.webp",
+        "author": "pascii_",
+        "page": "https://7tv.app/emotes/01F6MQ33FG000FFJ97ZB8MWV52"
+      },
+      {
+        "source": "7tv",
+        "id": "01F6TDT0280005G9TG05W2BXMB",
+        "name": "PartyKirby",
+        "animated": true,
+        "preview": "https://cdn.7tv.app/emote/01F6TDT0280005G9TG05W2BXMB/2x.webp",
+        "author": "swig0",
+        "page": "https://7tv.app/emotes/01F6TDT0280005G9TG05W2BXMB"
+      }
+    ]
+  },
+  {
+    "id": "thinking",
+    "title": "Thinking",
+    "kind": "emote",
+    "tagline": "Hmm. 🤔",
+    "lore": [
+      "The 🤔 Thinking Face arrived with Unicode 8.0 in 2015 and was a full-blown meme by late 2016, used as a sly “hmm, suspicious”. Discord servers took it further with distorted, deep-fried versions, spelled “thonk” on purpose."
+    ],
+    "sources": [
+      {
+        "label": "Know Your Meme: Thinking Face",
+        "url": "https://knowyourmeme.com/memes/thinking-face-emoji"
+      }
+    ],
+    "items": [
+      {
+        "source": "emojigg",
+        "id": "1454",
+        "name": "thinksmart",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/thinksmart.png",
+        "author": "Admin",
+        "page": "https://emoji.gg/emoji/thinksmart"
+      },
+      {
+        "source": "emojigg",
+        "id": "121",
+        "name": "thonk",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/thonk.png",
+        "author": "Unknown",
+        "page": "https://emoji.gg/emoji/thonk"
+      },
+      {
+        "source": "emojigg",
+        "id": "714",
+        "name": "spinthink",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/spinthink.gif",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/spinthink"
+      },
+      {
+        "source": "emojigg",
+        "id": "877",
+        "name": "SlavThink",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/SlavThink.png",
+        "author": "wufeehd",
+        "page": "https://emoji.gg/emoji/SlavThink"
+      },
+      {
+        "source": "emojigg",
+        "id": "2284",
+        "name": "think_fish",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/think_fish.png",
+        "author": "River",
+        "page": "https://emoji.gg/emoji/think_fish"
+      },
+      {
+        "source": "emojigg",
+        "id": "1600",
+        "name": "blobhyperthink",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/blobhyperthink.png",
+        "author": "DefCon42",
+        "page": "https://emoji.gg/emoji/blobhyperthink"
+      },
+      {
+        "source": "emojigg",
+        "id": "2092",
+        "name": "UltraThink",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/UltraThink.gif",
+        "author": "someone",
+        "page": "https://emoji.gg/emoji/UltraThink"
+      },
+      {
+        "source": "emojigg",
+        "id": "1038",
+        "name": "CrowThink",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/CrowThink.png",
+        "author": "Transmissions",
+        "page": "https://emoji.gg/emoji/CrowThink"
+      },
+      {
+        "source": "emojigg",
+        "id": "133",
+        "name": "ThinkingFast",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/ThinkingFast.png",
+        "author": "Unknown",
+        "page": "https://emoji.gg/emoji/ThinkingFast"
+      },
+      {
+        "source": "emojigg",
+        "id": "1910",
+        "name": "Life_is_thonkless",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/Life_is_thonkless.png",
+        "author": "SpicyBigDaddy",
+        "page": "https://emoji.gg/emoji/Life_is_thonkless"
+      },
+      {
+        "source": "emojigg",
+        "id": "3876",
+        "name": "NopeThink",
+        "animated": true,
+        "preview": "https://cdn3.emoji.gg/emojis/NopeThink.gif",
+        "author": "ShTHfan1",
+        "page": "https://emoji.gg/emoji/NopeThink"
+      }
+    ]
+  },
+  {
+    "id": "kanna",
+    "title": "Kanna Reactions",
+    "kind": "emote",
+    "tagline": "Blank stares and tiny sips from everyone’s favorite small dragon.",
+    "lore": [
+      "Kanna Kamui is the young dragon from Kyoto Animation’s Miss Kobayashi’s Dragon Maid (2017). Her deadpan stares and eating scenes turned into some of Discord’s most-used reaction emotes. This pack sticks to plain reactions."
+    ],
+    "sources": [
+      {
+        "label": "Know Your Meme: Miss Kobayashi’s Dragon Maid",
+        "url": "https://knowyourmeme.com/memes/miss-kobayashis-dragon-maid"
+      }
+    ],
+    "items": [
+      {
+        "source": "emojigg",
+        "id": "995",
+        "name": "KannaWhat",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaWhat.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaWhat"
+      },
+      {
+        "source": "emojigg",
+        "id": "488",
+        "name": "KannaSip",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaSip.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaSip"
+      },
+      {
+        "source": "emojigg",
+        "id": "485",
+        "name": "KannaWave",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaWave.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaWave"
+      },
+      {
+        "source": "emojigg",
+        "id": "495",
+        "name": "KannaFreeze",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaFreeze.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaFreeze"
+      },
+      {
+        "source": "emojigg",
+        "id": "491",
+        "name": "KannaFu",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaFu.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaFu"
+      },
+      {
+        "source": "emojigg",
+        "id": "630",
+        "name": "kannaPat",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/kannaPat.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/kannaPat"
+      },
+      {
+        "source": "emojigg",
+        "id": "361",
+        "name": "kannabear",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/kannabear.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/kannabear"
+      },
+      {
+        "source": "emojigg",
+        "id": "492",
+        "name": "KannaCurious",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaCurious.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaCurious"
+      },
+      {
+        "source": "emojigg",
+        "id": "489",
+        "name": "KannaPeer",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaPeer.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaPeer"
+      },
+      {
+        "source": "emojigg",
+        "id": "2780",
+        "name": "KannaOhh",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaOhh.png",
+        "author": "Miki ヤク",
+        "page": "https://emoji.gg/emoji/KannaOhh"
+      },
+      {
+        "source": "emojigg",
+        "id": "494",
+        "name": "KannaBlob",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaBlob.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaBlob"
+      },
+      {
+        "source": "emojigg",
+        "id": "487",
+        "name": "KannaSpook",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/KannaSpook.png",
+        "author": "Kohai",
+        "page": "https://emoji.gg/emoji/KannaSpook"
+      }
+    ]
+  },
+  {
+    "id": "reactions-kit",
+    "title": "Reactions Kit",
+    "kind": "emote",
+    "tagline": "The practical set every server ends up needing.",
+    "lore": [
+      "Yes, no, ping, upvote and pay respects. The small, useful vocabulary that turns reactions into votes, acknowledgements and running jokes."
+    ],
+    "sources": [],
+    "items": [
+      {
+        "source": "emojigg",
+        "id": "1269",
+        "name": "CheckMark",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/CheckMark.png",
+        "author": "robert712002",
+        "page": "https://emoji.gg/emoji/CheckMark"
+      },
+      {
+        "source": "emojigg",
+        "id": "1413",
+        "name": "Nope",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/Nope.png",
+        "author": "DeadBot",
+        "page": "https://emoji.gg/emoji/Nope"
+      },
+      {
+        "source": "emojigg",
+        "id": "2121",
+        "name": "upvote",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/upvote.png",
+        "author": "Nic",
+        "page": "https://emoji.gg/emoji/upvote"
+      },
+      {
+        "source": "emojigg",
+        "id": "926",
+        "name": "ping",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/ping.png",
+        "author": "Sam",
+        "page": "https://emoji.gg/emoji/ping"
+      },
+      {
+        "source": "emojigg",
+        "id": "4008",
+        "name": "F",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/F.png",
+        "author": "whatsgay.com",
+        "page": "https://emoji.gg/emoji/F"
+      },
+      {
+        "source": "emojigg",
+        "id": "1265",
+        "name": "Bonk",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/Bonk.png",
+        "author": "SpicyBigDaddy",
+        "page": "https://emoji.gg/emoji/Bonk"
+      },
+      {
+        "source": "emojigg",
+        "id": "833",
+        "name": "OOF",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/OOF.png",
+        "author": "Skarz",
+        "page": "https://emoji.gg/emoji/OOF"
+      },
+      {
+        "source": "emojigg",
+        "id": "1815",
+        "name": "no_u",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/no_u.png",
+        "author": "◈Simo◈",
+        "page": "https://emoji.gg/emoji/no_u"
+      },
+      {
+        "source": "emojigg",
+        "id": "1460",
+        "name": "10outof10",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/10outof10.png",
+        "author": "Admin",
+        "page": "https://emoji.gg/emoji/10outof10"
+      },
+      {
+        "source": "emojigg",
+        "id": "1077",
+        "name": "w",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/w.png",
+        "author": "SmockNess",
+        "page": "https://emoji.gg/emoji/w"
+      },
+      {
+        "source": "emojigg",
+        "id": "1067",
+        "name": "l",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/l.png",
+        "author": "SmockNess",
+        "page": "https://emoji.gg/emoji/l"
+      },
+      {
+        "source": "emojigg",
+        "id": "1858",
+        "name": "noU",
+        "animated": false,
+        "preview": "https://cdn3.emoji.gg/emojis/noU.png",
+        "author": "мотыга",
+        "page": "https://emoji.gg/emoji/noU"
+      }
+    ]
+  },
+  {
+    "id": "noto-feelings",
+    "title": "Animated Feelings",
+    "kind": "sticker",
+    "tagline": "Google’s animated emoji, as stickers. Fits every server’s 5 free slots.",
+    "lore": [
+      "Google’s Noto Animated Emoji bring the everyday faces to life. Five of the most expressive, sized to fit the five sticker slots every Discord server has before boosting."
+    ],
+    "sources": [
+      {
+        "label": "Noto Animated Emoji (CC BY 4.0)",
+        "url": "https://googlefonts.github.io/noto-emoji-animation/"
+      }
+    ],
+    "items": [
+      {
+        "source": "noto",
+        "id": "1f602",
+        "name": "Joy",
+        "animated": true,
+        "preview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f602/emoji.svg",
+        "animatedPreview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f602/512.webp",
+        "author": null,
+        "page": "https://googlefonts.github.io/noto-emoji-animation/"
+      },
+      {
+        "source": "noto",
+        "id": "1f60d",
+        "name": "Heart Eyes",
+        "animated": true,
+        "preview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60d/emoji.svg",
+        "animatedPreview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60d/512.webp",
+        "author": null,
+        "page": "https://googlefonts.github.io/noto-emoji-animation/"
+      },
+      {
+        "source": "noto",
+        "id": "1f62d",
+        "name": "Loudly Crying",
+        "animated": true,
+        "preview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f62d/emoji.svg",
+        "animatedPreview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f62d/512.webp",
+        "author": null,
+        "page": "https://googlefonts.github.io/noto-emoji-animation/"
+      },
+      {
+        "source": "noto",
+        "id": "1f973",
+        "name": "Partying Face",
+        "animated": true,
+        "preview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f973/emoji.svg",
+        "animatedPreview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f973/512.webp",
+        "author": null,
+        "page": "https://googlefonts.github.io/noto-emoji-animation/"
+      },
+      {
+        "source": "noto",
+        "id": "1fae0",
+        "name": "Melting",
+        "animated": true,
+        "preview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1fae0/emoji.svg",
+        "animatedPreview": "https://fonts.gstatic.com/s/e/notoemoji/latest/1fae0/512.webp",
+        "author": null,
+        "page": "https://googlefonts.github.io/noto-emoji-animation/"
+      }
+    ]
+  },
+  {
+    "id": "fluent-reactions",
+    "title": "3D Reactions",
+    "kind": "sticker",
+    "tagline": "Microsoft’s Fluent emoji in 3D. Five big, friendly reactions.",
+    "lore": [
+      "Microsoft’s Fluent Emoji, released as open source, include a soft 3D style that reads beautifully at sticker size. Five essentials for the base sticker slots."
+    ],
+    "sources": [
+      {
+        "label": "Fluent Emoji by Microsoft (MIT)",
+        "url": "https://github.com/microsoft/fluentui-emoji"
+      }
+    ],
+    "items": [
+      {
+        "source": "fluent",
+        "id": "Thumbs up",
+        "name": "Thumbs up",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Thumbs%20up/Default/3D/thumbs_up_3d_default.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Red heart",
+        "name": "Red heart",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Red%20heart/3D/red_heart_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Fire",
+        "name": "Fire",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Fire/3D/fire_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Party popper",
+        "name": "Party popper",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Party%20popper/3D/party_popper_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Eyes",
+        "name": "Eyes",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Eyes/3D/eyes_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      }
+    ]
+  },
+  {
+    "id": "fluent-celebrate",
+    "title": "3D Celebrate",
+    "kind": "sticker",
+    "tagline": "Trophies, crowns and rockets for the big moments.",
+    "lore": [
+      "Five 3D Fluent emoji for wins, launches and milestones."
+    ],
+    "sources": [
+      {
+        "label": "Fluent Emoji by Microsoft (MIT)",
+        "url": "https://github.com/microsoft/fluentui-emoji"
+      }
+    ],
+    "items": [
+      {
+        "source": "fluent",
+        "id": "Trophy",
+        "name": "Trophy",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Trophy/3D/trophy_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Crown",
+        "name": "Crown",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Crown/3D/crown_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Rocket",
+        "name": "Rocket",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Rocket/3D/rocket_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Sparkles",
+        "name": "Sparkles",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Sparkles/3D/sparkles_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      },
+      {
+        "source": "fluent",
+        "id": "Hundred points",
+        "name": "Hundred points",
+        "animated": false,
+        "preview": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Hundred%20points/3D/hundred_points_3d.png",
+        "author": null,
+        "page": "https://github.com/microsoft/fluentui-emoji"
+      }
+    ]
+  }
+]
