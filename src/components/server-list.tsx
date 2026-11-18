@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { GuildSummary } from "@/lib/types";
 import { GuildIcon } from "./avatar";
+import { Button } from "./button";
 import { ArrowRightIcon, ArrowUpRightIcon } from "./icons";
 
 const group = "rounded-[18px] bg-surface p-1.5";
@@ -20,19 +21,20 @@ export function ServerList({ guilds, inviteUrl }: { guilds: GuildSummary[]; invi
         <ul className={group}>
           {ready.map((g) => (
             <li key={g.id} className="rounded-concentric">
-              <Link
-                href={`/servers/${g.id}`}
-                className={`${row} group pressable transition-[filter,background-color] duration-150 [@media(hover:hover)]:hover:bg-hover`}
+              <Button
+                variant="ghost"
+                render={<Link href={`/servers/${g.id}`} />}
+                className={`${row} group !h-11 w-full !justify-start !gap-3 !pr-2 !pl-1.5 !text-fg`}
               >
                 <GuildIcon guild={g} size={32} concentric />
-                <span dir="auto" title={g.name} className="min-w-0 flex-1 truncate text-[14px] font-medium">
+                <span dir="auto" title={g.name} className="min-w-0 flex-1 truncate text-left text-[14px] font-medium">
                   {g.name}
                 </span>
                 <ArrowRightIcon
                   size={14}
                   className="shrink-0 text-fg-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
                 />
-              </Link>
+              </Button>
             </li>
           ))}
         </ul>
@@ -48,15 +50,15 @@ export function ServerList({ guilds, inviteUrl }: { guilds: GuildSummary[]; invi
                 <span dir="auto" title={g.name} className="min-w-0 flex-1 truncate text-[14px] text-fg-2">
                   {g.name}
                 </span>
-                <a
-                  href={inviteUrl(g.id)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="pressable inline-flex h-7 shrink-0 items-center gap-1 rounded-[7px] pr-1.5 pl-2.5 text-[12px] font-medium text-fg-2 transition-[filter,background-color,color] duration-150 [@media(hover:hover)]:hover:bg-hover [@media(hover:hover)]:hover:text-fg"
+                <Button
+                  variant="ghost"
+                  render={<a href={inviteUrl(g.id)} target="_blank" rel="noreferrer" />}
+                  aria-label={`Add Emoteger to ${g.name}`}
+                  className="!h-7 shrink-0 !gap-1 !rounded-[7px] !pr-1.5 !pl-2.5 !text-[12px]"
                 >
                   Add
                   <ArrowUpRightIcon size={13} className="text-fg-3" />
-                </a>
+                </Button>
               </li>
             ))}
           </ul>

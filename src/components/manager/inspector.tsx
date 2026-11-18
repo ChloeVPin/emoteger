@@ -1,8 +1,11 @@
 "use client";
 
+import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
+import { Input } from "@ui-sdk/react/input";
+import { toast } from "@ui-sdk/react/toast";
 import { useState } from "react";
-import { toast } from "sonner";
 import { stickerRules } from "@/lib/names";
+import { Button } from "../button";
 import { CloseIcon, CopyIcon, DownloadIcon, LinkIcon } from "../icons";
 import { SwapIcon, copyText, quietButton, useFlash } from "./copy-button";
 import { HoldToDelete } from "./hold-button";
@@ -28,13 +31,12 @@ function status(item: Item) {
   return null;
 }
 
-/** A detail row. When `copy` is set the whole row copies its value and confirms with a check. */
 function Row({ label, value, mono, copy }: { label: string; value: string; mono?: boolean; copy?: string }) {
   const [done, flash] = useFlash();
   const content = (
     <>
-      <dt className="w-[76px] shrink-0 text-left text-fg-3">{label}</dt>
-      <dd title={value} className={`min-w-0 flex-1 truncate text-left text-fg ${mono ? "font-mono text-[12px]" : ""}`}>
+      <dt className="w-[76px] shrink-0 text-left font-normal text-fg-3">{label}</dt>
+      <dd title={value} className={`min-w-0 flex-1 truncate text-left font-normal text-fg ${mono ? "font-mono text-[12px]" : ""}`}>
         {value}
       </dd>
       {copy !== undefined ? (
@@ -49,20 +51,19 @@ function Row({ label, value, mono, copy }: { label: string; value: string; mono?
   );
   const shape = "flex h-8 w-full min-w-0 items-center gap-2 rounded-[8px] px-2";
   return copy !== undefined ? (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
       aria-label={`Copy ${label.toLowerCase()}`}
       onClick={() => copyText(copy, flash)}
-      className={`${shape} group pressable transition-[filter,background-color] duration-150 [@media(hover:hover)]:hover:bg-hover`}
+      className={`${shape} group !justify-start !px-2 !text-[13px]`}
     >
       {content}
-    </button>
+    </Button>
   ) : (
     <div className={shape}>{content}</div>
   );
 }
 
-/** An inline-editable detail row that saves on blur or Enter and reverts on Escape. */
 function EditRow({
   label,
   value,
@@ -80,27 +81,36 @@ function EditRow({
 }) {
   const [draft, setDraft] = useState(value);
   const ok = valid(draft);
-  const save = async () => {
-    if (draft.trim() === value) return setDraft(value);
-    if (!ok) return setDraft(value);
+  const save = async (next = draft) => {
+    if (next.trim() === value) return setDraft(value);
+    if (!valid(next)) return setDraft(value);
     try {
-      await onSave(draft.trim());
+      await onSave(next.trim());
     } catch {
       setDraft(value);
     }
   };
   return (
-    <div className="flex min-h-8 w-full min-w-0 items-start gap-2 px-2">
-      <dt className="w-[76px] shrink-0 pt-[7px] text-fg-3">{label}</dt>
-      <dd className="min-w-0 flex-1">
-        <input
+    <Field invalid={!ok ? true : undefined} className="flex min-h-8 w-full min-w-0 items-start gap-2 px-2">
+      <FieldLabel className="w-[76px] shrink-0 pt-[7px] text-fg-3">{label}</FieldLabel>
+      <div className="min-w-0 flex-1">
+        <Input
           value={draft}
           placeholder={placeholder}
-          aria-label={label}
-          aria-invalid={!ok}
           title={!ok ? hint : draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={save}
+          onValueChange={(next, details) => {
+            if (details.source === "agent") {
+              if (!valid(next)) {
+                details.cancel();
+                return;
+              }
+              setDraft(next);
+              void save(next);
+              return;
+            }
+            setDraft(next);
+          }}
+          onBlur={() => void save()}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.currentTarget.blur();
             if (e.key === "Escape") {
@@ -110,12 +120,15 @@ function EditRow({
               requestAnimationFrame(() => input.blur());
             }
           }}
-          style={{ outline: "none" }}
-          className="-mx-1.5 h-8 w-[calc(100%+0.75rem)] rounded-[6px] bg-transparent px-1.5 text-ellipsis text-fg transition-[background-color,box-shadow] duration-150 placeholder:text-fg-3 hover:bg-hover focus:bg-raised focus:shadow-[inset_0_0_0_1.5px_var(--color-sun)] aria-invalid:shadow-[inset_0_0_0_1.5px_var(--color-danger)]"
+          className="-mx-1.5 h-8 w-[calc(100%+0.75rem)] rounded-[6px] bg-transparent px-1.5 text-ellipsis text-fg transition-[background-color,box-shadow] duration-150 placeholder:text-fg-3 hover:bg-hover focus:bg-raised focus:shadow-[inset_0_0_0_1.5px_var(--color-sun)] focus-visible:outline-none aria-invalid:shadow-[inset_0_0_0_1.5px_var(--color-danger)]"
         />
-        {!ok ? <p className="pb-1 text-[12px] text-danger">{hint}</p> : null}
-      </dd>
-    </div>
+        {!ok ? (
+          <FieldError match className="pb-1 text-[12px] text-danger">
+            {hint}
+          </FieldError>
+        ) : null}
+      </div>
+    </Field>
   );
 }
 
@@ -125,14 +138,15 @@ export function Inspector({
   onUpdate,
   onDelete,
   onClose,
+  closeAction,
 }: {
   cfg: KindConfig;
   item: Item;
   onUpdate: (key: string, fields: Fields) => Promise<void>;
   onDelete: (key: string) => void;
   onClose: () => void;
+  closeAction?: React.ReactNode;
 }) {
-  // The parent keys this component by item, so the draft resets per emote.
   const [draft, setDraft] = useState(item.name);
   const [saving, setSaving] = useState(false);
   const [linkCopied, flashLink] = useFlash();
@@ -143,15 +157,15 @@ export function Inspector({
   const locked = item.managed || !item.id;
   const note = status(item);
 
-  const commit = async () => {
-    if (!dirty || saving) return;
-    if (!valid) {
+  const commit = async (next = draft) => {
+    if (next === item.name || saving) return;
+    if (!cfg.validName(next)) {
       setDraft(item.name);
       return;
     }
     setSaving(true);
     try {
-      await onUpdate(item.key, { name: sticker ? draft.trim() : draft });
+      await onUpdate(item.key, { name: sticker ? next.trim() : next });
     } catch {
       setDraft(item.name);
     } finally {
@@ -172,32 +186,41 @@ export function Inspector({
         ) : (
           <span className="text-fg-3">Lottie animations can&rsquo;t be previewed here</span>
         )}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="pressable absolute top-1.5 right-1.5 grid size-7 place-items-center rounded-concentric text-fg-3 transition-[filter,background-color,color] duration-150 [@media(hover:hover)]:hover:bg-hover [@media(hover:hover)]:hover:text-fg"
-        >
-          <CloseIcon size={14} />
-        </button>
+        {closeAction ?? (
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            aria-label="Close details"
+            className="absolute top-1.5 right-1.5 !size-7 !rounded-concentric !p-0 text-fg-3"
+          >
+            <CloseIcon size={14} />
+          </Button>
+        )}
       </div>
 
-      <div className="relative mt-4">
-        <label htmlFor="emote-name" className="sr-only">
-          Name
-        </label>
-        <input
-          id="emote-name"
+      <Field disabled={locked} invalid={dirty && !valid ? true : undefined} className="relative mt-4">
+        <FieldLabel className="sr-only">Name</FieldLabel>
+        <Input
           value={draft}
           title={draft}
-          disabled={locked}
           maxLength={sticker ? 30 : 32}
           spellCheck={false}
           autoComplete="off"
           autoCapitalize="off"
-          aria-invalid={dirty && !valid}
-          onChange={(e) => setDraft(cfg.normalizeName(e.target.value))}
-          onBlur={commit}
+          onValueChange={(raw, details) => {
+            const next = cfg.normalizeName(raw);
+            if (details.source === "agent") {
+              if (!cfg.validName(next)) {
+                details.cancel();
+                return;
+              }
+              setDraft(next);
+              void commit(next);
+              return;
+            }
+            setDraft(next);
+          }}
+          onBlur={() => void commit()}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.currentTarget.blur();
             if (e.key === "Escape") {
@@ -207,16 +230,17 @@ export function Inspector({
               requestAnimationFrame(() => input.blur());
             }
           }}
-          style={{ outline: "none" }}
-          className="display -mx-2 h-8 w-[calc(100%+1rem)] rounded-[8px] bg-transparent px-2 pr-8 text-[15px] font-semibold text-ellipsis transition-[background-color,box-shadow] duration-150 enabled:hover:bg-hover focus:bg-raised focus:shadow-[inset_0_0_0_1.5px_var(--color-sun)] aria-invalid:shadow-[inset_0_0_0_1.5px_var(--color-danger)]"
+          className="display -mx-2 h-8 w-[calc(100%+1rem)] rounded-[8px] bg-transparent px-2 pr-8 text-[15px] font-semibold text-ellipsis transition-[background-color,box-shadow] duration-150 enabled:hover:bg-hover focus:bg-raised focus:shadow-[inset_0_0_0_1.5px_var(--color-sun)] focus-visible:outline-none aria-invalid:shadow-[inset_0_0_0_1.5px_var(--color-danger)]"
         />
         {saving ? <span aria-hidden className="spinner absolute top-4 right-0 !size-3.5 -translate-y-1/2" /> : null}
         {dirty && !valid ? (
-          <p className="mt-1 text-[12px] text-danger">{cfg.nameHint}</p>
+          <FieldError match className="mt-1 text-[12px] text-danger">
+            {cfg.nameHint}
+          </FieldError>
         ) : note ? (
-          <p className="mt-1 text-[12px] text-fg-3">{note}</p>
+          <FieldDescription className="mt-1 text-[12px] text-fg-3">{note}</FieldDescription>
         ) : null}
-      </div>
+      </Field>
 
       <dl className="-mx-2 mt-3 flex flex-col">
         {sticker && item.id ? (
@@ -246,18 +270,33 @@ export function Inspector({
       </dl>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <button type="button" disabled={!item.id} onClick={() => copyText(cfg.downloadUrl(item), flashLink)} className={quietButton}>
+        <Button
+          variant="quiet"
+          disabled={!item.id}
+          onClick={() => copyText(cfg.downloadUrl(item), flashLink)}
+          className={quietButton}
+        >
           <SwapIcon done={linkCopied} icon={<LinkIcon size={15} className="text-fg-3" />} />
           <span className="truncate">Copy link</span>
-        </button>
-        <button type="button" disabled={!item.id} onClick={() => download(cfg, item)} className={quietButton}>
+        </Button>
+        <Button
+          variant="quiet"
+          disabled={!item.id}
+          pendingAnnouncement="Downloading"
+          onClick={() => download(cfg, item)}
+          className={quietButton}
+        >
           <DownloadIcon size={15} className="shrink-0 text-fg-3" />
           <span className="truncate">Download</span>
-        </button>
+        </Button>
       </div>
 
       <div className="mt-2">
-        <HoldToDelete disabled={locked} onConfirm={() => onDelete(item.key)} />
+        <HoldToDelete
+          disabled={locked}
+          confirm={`Deletes ${cfg.quote(item.name)}`}
+          onConfirm={() => onDelete(item.key)}
+        />
       </div>
     </div>
   );

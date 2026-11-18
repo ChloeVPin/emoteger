@@ -1,6 +1,15 @@
 "use client";
 
-import { AlertDialog } from "@base-ui/react/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogClose,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@ui-sdk/react/alert-dialog";
+import { Progress, ProgressIndicator, ProgressTrack } from "@ui-sdk/react/progress";
+import { Button } from "./button";
 import { CheckIcon } from "./icons";
 import { type BulkJob, bulk, useBulk, useNow } from "./manager/bulk";
 import { HoldToDelete } from "./manager/hold-button";
@@ -14,17 +23,17 @@ const fmt = (ms: number) => {
 const secondary =
   "pressable h-8 rounded-concentric bg-raised text-[13px] font-medium transition-[filter,background-color] duration-150 [@media(hover:hover)]:hover:bg-[oklch(0.26_0.005_75)]";
 
-/** Completed requests over the total. Never an estimate. */
-function Bar({ value, waiting }: { value: number; waiting: boolean }) {
+function Bar({ label, value, max, waiting }: { label: string; value: number; max: number; waiting: boolean }) {
   return (
-    <div className="h-1.5 overflow-hidden rounded-full bg-line">
-      <div
-        className={`h-full origin-left rounded-full transition-[transform,background-color] duration-300 ease-[var(--ease-out)] ${
-          waiting ? "bg-fg-3" : "bg-fg"
-        }`}
-        style={{ transform: `scaleX(${value})` }}
-      />
-    </div>
+    <Progress aria-label={label} value={value} min={0} max={Math.max(1, max)}>
+      <ProgressTrack className="h-1.5 w-full overflow-hidden rounded-full bg-line">
+        <ProgressIndicator
+          className={`h-full rounded-full transition-[width,background-color] duration-300 ease-[var(--ease-out)] motion-reduce:transition-none ${
+            waiting ? "bg-fg-3" : "bg-fg"
+          }`}
+        />
+      </ProgressTrack>
+    </Progress>
   );
 }
 
@@ -33,7 +42,6 @@ function Body({ job }: { job: BulkJob }) {
   const total = job.targets.length;
   const processed = job.done + job.failures.length;
   const waiting = job.waitUntil !== null;
-  // useNow only schedules re-renders; the countdown itself reads the real clock.
   useNow(waiting);
   const plural = (n: number) => (n === 1 ? cfg.noun : cfg.plural);
   const adding = job.action === "import";
@@ -41,20 +49,25 @@ function Body({ job }: { job: BulkJob }) {
   if (job.phase === "confirm") {
     return (
       <>
-        <AlertDialog.Title className="display text-[15px] font-semibold">
+        <AlertDialogTitle className="display text-[15px] font-semibold">
           Delete all {total} {plural(total)}?
-        </AlertDialog.Title>
-        <AlertDialog.Description className="mt-1.5 min-h-[60px] text-fg-2">
+        </AlertDialogTitle>
+        <AlertDialogDescription className="mt-1.5 min-h-[60px] text-fg-2">
           {total === 1 ? "It" : "They"}&rsquo;ll be removed from{" "}
           <span dir="auto" className="text-fg [overflow-wrap:anywhere]">
             {job.guildName}
           </span>{" "}
           for everyone. This can&rsquo;t be undone.
           {job.skipped ? ` ${job.skipped} managed ${plural(job.skipped)} will stay.` : ""}
-        </AlertDialog.Description>
+        </AlertDialogDescription>
         <div className="mt-5 grid grid-cols-2 gap-2 rounded-concentric">
-          <AlertDialog.Close className={`${secondary} text-fg`}>Cancel</AlertDialog.Close>
-          <HoldToDelete label="Hold to delete" onConfirm={bulk.start} className="bg-danger/10" />
+          <AlertDialogClose className={`${secondary} text-fg`}>Cancel</AlertDialogClose>
+          <HoldToDelete
+            label="Hold to delete"
+            confirm={`Deletes all ${total} ${plural(total)} from ${job.guildName}`}
+            onConfirm={bulk.start}
+            className="bg-danger/10"
+          />
         </div>
       </>
     );
@@ -71,32 +84,32 @@ function Body({ job }: { job: BulkJob }) {
     return (
       <>
         <div className="flex items-baseline justify-between gap-3">
-          <AlertDialog.Title className="display text-[15px] font-semibold">
+          <AlertDialogTitle className="display text-[15px] font-semibold">
             {adding ? "Adding" : "Deleting"} {cfg.plural}
-          </AlertDialog.Title>
+          </AlertDialogTitle>
           <span className="tabular shrink-0 text-fg-3">
             <span className="text-fg">{processed}</span> of {total}
           </span>
         </div>
         <div className="mt-4">
-          <Bar value={total ? processed / total : 0} waiting={waiting} />
+          <Bar label={`${adding ? "Adding" : "Deleting"} ${cfg.plural}`} value={processed} max={total} waiting={waiting} />
         </div>
-        <AlertDialog.Description render={<div />} className="mt-3 min-h-[38px]">
+        <AlertDialogDescription render={<div />} className="mt-3 min-h-[38px]">
           <p className={`tabular truncate ${waiting ? "text-fg-2" : "text-fg"}`} title={status}>
             {status}
           </p>
           <p className="mt-0.5 text-[12px] text-fg-3">You can close this. It keeps going while Emoteger is open.</p>
-        </AlertDialog.Description>
+        </AlertDialogDescription>
         <div className="mt-5 grid grid-cols-2 gap-2 rounded-concentric">
-          <AlertDialog.Close className={`${secondary} text-fg`}>Hide</AlertDialog.Close>
-          <button
-            type="button"
+          <AlertDialogClose className={`${secondary} text-fg`}>Hide</AlertDialogClose>
+          <Button
+            variant="quiet"
             disabled={job.stopping}
-            onClick={bulk.stop}
-            className={`${secondary} text-danger disabled:opacity-50`}
+            onClick={() => bulk.stop()}
+            className="!rounded-concentric !text-danger"
           >
             Stop
-          </button>
+          </Button>
         </div>
       </>
     );
@@ -113,15 +126,15 @@ function Body({ job }: { job: BulkJob }) {
   return (
     <>
       <div className="flex items-baseline justify-between gap-3">
-        <AlertDialog.Title className="display text-[15px] font-semibold">{title}</AlertDialog.Title>
+        <AlertDialogTitle className="display text-[15px] font-semibold">{title}</AlertDialogTitle>
         <span className="tabular shrink-0 text-fg-3">
           <span className="text-fg">{processed}</span> of {total}
         </span>
       </div>
       <div className="mt-4">
-        <Bar value={total ? processed / total : 0} waiting={false} />
+        <Bar label={title} value={processed} max={total} waiting={false} />
       </div>
-      <AlertDialog.Description render={<div />} className="mt-3 min-h-[38px] text-fg-2">
+      <AlertDialogDescription render={<div />} className="mt-3 min-h-[38px] text-fg-2">
         {job.aborted ? (
           <>
             <p className="text-danger">{job.done ? job.aborted : `Discord said: ${job.aborted}`}</p>
@@ -136,7 +149,10 @@ function Body({ job }: { job: BulkJob }) {
             <p className="text-danger">
               {job.failures.length} couldn&rsquo;t be deleted · {job.failures[0]!.reason}
             </p>
-            <p className="mt-0.5 line-clamp-2 text-[12px] text-fg-3" title={job.failures.map((f) => `${cfg.quote(f.name)}: ${f.reason}`).join("\n")}>
+            <p
+              className="mt-0.5 line-clamp-2 text-[12px] text-fg-3"
+              title={job.failures.map((f) => `${cfg.quote(f.name)}: ${f.reason}`).join("\n")}
+            >
               {job.failures.map((f) => cfg.quote(f.name)).join(", ")}
             </p>
           </>
@@ -146,18 +162,21 @@ function Body({ job }: { job: BulkJob }) {
           </p>
         ) : (
           <p>
-            {adding ? "Added to" : "Removed from"} <span dir="auto" className="text-fg">{job.guildName}</span>.
+            {adding ? "Added to" : "Removed from"}{" "}
+            <span dir="auto" className="text-fg">
+              {job.guildName}
+            </span>
+            .
           </p>
         )}
-      </AlertDialog.Description>
+      </AlertDialogDescription>
       <div className="mt-5 rounded-concentric">
-        <AlertDialog.Close className={`${secondary} w-full text-fg`}>Done</AlertDialog.Close>
+        <AlertDialogClose className={`${secondary} w-full text-fg`}>Done</AlertDialogClose>
       </div>
     </>
   );
 }
 
-/** Small ring that mirrors the modal's progress bar, for the header. */
 function Ring({ value, waiting }: { value: number; waiting: boolean }) {
   const r = 6;
   const c = 2 * Math.PI * r;
@@ -180,27 +199,22 @@ function Ring({ value, waiting }: { value: number; waiting: boolean }) {
   );
 }
 
-/** The one progress dialog. Mount it once per page shell. */
 export function BulkDialog() {
   const job = useBulk();
   return (
-    <AlertDialog.Root open={Boolean(job?.open)} onOpenChange={(open) => bulk.setOpen(open)}>
-      <AlertDialog.Portal>
-        <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-black/55 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0" />
-        <AlertDialog.Popup className="fixed inset-x-0 top-[round(down,calc(50dvh-120px),1px)] z-50 mx-auto w-[380px] max-w-[calc(100vw-2rem)] rounded-[24px] bg-overlay p-4 shadow-(--shadow-float) outline-none transition-[scale,opacity] duration-150 ease-[var(--ease-out)] data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.96] data-starting-style:opacity-0">
-          {job ? (
-            // Same card throughout; only the contents change between confirm, progress and summary.
-            <div key={job.phase} className="phase-in rounded-concentric">
-              <Body job={job} />
-            </div>
-          ) : null}
-        </AlertDialog.Popup>
-      </AlertDialog.Portal>
-    </AlertDialog.Root>
+    <AlertDialog open={Boolean(job?.open)} onOpenChange={(open) => bulk.setOpen(open)}>
+      <AlertDialogBackdrop className="fixed inset-0 z-50 m-0 border-0 bg-black/55 p-0 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 motion-reduce:transition-none" />
+      <AlertDialogContent className="fixed inset-x-0 top-[round(down,calc(50dvh-120px),1px)] bottom-auto z-50 mx-auto my-0 h-fit w-[380px] max-w-[calc(100vw-2rem)] rounded-[24px] border-0 bg-overlay p-4 shadow-(--shadow-float) outline-none transition-[scale,opacity] duration-150 ease-[var(--ease-out)] data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.96] data-starting-style:opacity-0 motion-reduce:transition-none">
+        {job ? (
+          <div key={job.phase} className="phase-in rounded-concentric">
+            <Body job={job} />
+          </div>
+        ) : null}
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
-/** Progress for a hidden job: "pill" for top bars, "row" for the sidebar. */
 export function BulkIndicator({ variant = "pill" }: { variant?: "pill" | "row" }) {
   const job = useBulk();
   if (!job || job.open || job.phase === "confirm") return null;
@@ -220,11 +234,11 @@ export function BulkIndicator({ variant = "pill" }: { variant?: "pill" | "row" }
 
   if (variant === "row") {
     return (
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         onClick={() => bulk.setOpen(true)}
         aria-label={label}
-        className="phase-in pressable flex h-8 w-full items-center gap-2 rounded-[6px] px-2 text-[13px] text-fg-2 transition-[filter,background-color,color] duration-150 [@media(hover:hover)]:hover:bg-hover [@media(hover:hover)]:hover:text-fg"
+        className="phase-in !h-8 w-full !justify-start !gap-2 !rounded-[6px] !px-2 !text-[13px]"
       >
         {icon}
         <span className="min-w-0 flex-1 truncate text-left">
@@ -233,27 +247,26 @@ export function BulkIndicator({ variant = "pill" }: { variant?: "pill" | "row" }
         <span className="tabular text-[12px] text-fg-3">
           {processed}/{total}
         </span>
-      </button>
+      </Button>
     );
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="quiet"
       onClick={() => bulk.setOpen(true)}
       aria-label={label}
       title={done ? "Finished" : job.waitUntil ? "Waiting on Discord's rate limit" : verb}
-      className="phase-in pressable flex h-7 items-center gap-1.5 rounded-full bg-raised pr-2.5 pl-1.5 text-[12px] font-medium transition-[filter,background-color] duration-150 [@media(hover:hover)]:hover:bg-overlay"
+      className="phase-in !h-7 !gap-1.5 !rounded-full !pr-2.5 !pl-1.5 !text-[12px]"
     >
       {icon}
       <span className="tabular text-fg-2">
         {processed}/{total}
       </span>
-    </button>
+    </Button>
   );
 }
 
-/** Pill + dialog together, for pages without the server shell (e.g. the servers list). */
 export function BulkStatus() {
   return (
     <>

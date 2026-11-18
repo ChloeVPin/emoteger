@@ -1,14 +1,38 @@
 "use client";
 
-import { Dialog } from "@base-ui/react/dialog";
+import { inputHints } from "@ui-sdk/core";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandGroupLabel,
+  CommandInput,
+  CommandItem,
+  CommandItemIcon,
+  CommandList,
+  CommandSeparator,
+} from "@ui-sdk/react/command";
+import { Dialog, DialogBackdrop, DialogContent, DialogTitle } from "@ui-sdk/react/dialog";
+import { useShortcut } from "@ui-sdk/react/shortcuts";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { GuildSummary } from "@/lib/types";
 import { GuildIcon } from "./avatar";
-import { CheckIcon, CloseIcon, CompassIcon, LogOutIcon, PlusIcon, SearchIcon, ServersIcon, SmileIcon, StickerIcon, TrashIcon } from "./icons";
+import { Button } from "./button";
+import {
+  CheckIcon,
+  CloseIcon,
+  CompassIcon,
+  LogOutIcon,
+  PlusIcon,
+  SearchIcon,
+  ServersIcon,
+  SmileIcon,
+  StickerIcon,
+  TrashIcon,
+} from "./icons";
 import { type Section, sectionPath, useSection } from "./manager/sections";
 
-/** One result in a scoped search: an emote, a sticker, a catalog item. */
 export type ScopeResult = {
   id: string;
   label: string;
@@ -17,19 +41,12 @@ export type ScopeResult = {
   selected?: boolean;
 };
 
-/**
- * A page hands the menu a scope ("Search emoji.gg") and keeps ownership of its data:
- * the menu asks the scope for results and tells it what was picked.
- */
 export type SearchScope = {
   label: string;
   initial?: string;
   search: (query: string, signal: AbortSignal) => Promise<ScopeResult[]> | ScopeResult[];
-  /** Return true to keep the menu open (multi-select, like adding to a Browse selection). */
   pick: (id: string) => boolean | void;
-  /** Live selection state, for checkmarks that update as you pick. */
   isSelected?: (id: string) => boolean;
-  /** "Show all results" applies the query to the page itself. */
   showAll?: (query: string) => void;
 };
 
@@ -50,7 +67,6 @@ const useMenu = () =>
     () => state,
   );
 
-/** Actions a page listens for: the command menu asks, the page that owns the state acts. */
 export type PageCommand = "upload" | "delete-all";
 export const PAGE_COMMAND = "emoteger:command";
 
@@ -61,41 +77,36 @@ type Row = {
   icon?: React.ReactNode;
   image?: string;
   detail?: string;
-  keywords?: string;
+  keywords?: string[];
   hint?: string;
   selected?: boolean;
   run: () => boolean | void;
 };
+
+const searchHints = inputHints("search");
 
 export function CommandMenu({ guildId, guilds }: { guildId: string; guilds: GuildSummary[] }) {
   const { open, scope } = useMenu();
   const router = useRouter();
   const section = useSection();
   const [query, setQuery] = useState("");
-  const [active, setActive] = useState(0);
   const [found, setFound] = useState<{ query: string; items: ScopeResult[] } | null>(null);
   const [searching, setSearching] = useState(false);
-  const listRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        if (state.open) set({ open: false });
-        else set({ open: true, scope: null });
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  useShortcut(
+    "mod+k",
+    () => {
+      if (state.open) set({ open: false });
+      else set({ open: true, scope: null });
+    },
+    { description: "Open command menu", allowInInput: true },
+  );
 
-  // Each time the menu opens, start from the scope's current search (if any).
   useEffect(() => {
     if (open) setQuery(scope?.initial ?? "");
     else setFound(null);
   }, [open, scope]);
 
-  // Scoped searches may hit the network: debounce lightly and cancel stale requests.
   useEffect(() => {
     if (!open || !scope) return;
     const controller = new AbortController();
@@ -123,24 +134,31 @@ export function CommandMenu({ guildId, guilds }: { guildId: string; guilds: Guil
     const list: Row[] = [];
     if (section !== "browse") {
       list.push(
-        { id: "upload", group: "Actions", label: `Upload ${noun}`, icon: <PlusIcon />, keywords: "add new file", run: page("upload") },
-        { id: "delete-all", group: "Actions", label: `Delete all ${noun}…`, icon: <TrashIcon />, keywords: "remove clear", run: page("delete-all") },
+        { id: "upload", group: "Actions", label: `Upload ${noun}`, icon: <PlusIcon />, keywords: ["Actions", "add", "new", "file"], run: page("upload") },
+        { id: "delete-all", group: "Actions", label: `Delete all ${noun}…`, icon: <TrashIcon />, keywords: ["Actions", "remove", "clear"], run: page("delete-all") },
       );
     }
     list.push(
-      { id: "go-emote", group: "Go to", label: "Emotes", icon: <SmileIcon />, hint: section === "emote" ? "Current" : undefined, run: go("emote") },
-      { id: "go-sticker", group: "Go to", label: "Stickers", icon: <StickerIcon />, hint: section === "sticker" ? "Current" : undefined, run: go("sticker") },
-      { id: "go-browse", group: "Go to", label: "Browse", icon: <CompassIcon />, keywords: "emoji.gg 7tv noto fluent import find", hint: section === "browse" ? "Current" : undefined, run: go("browse") },
+      { id: "go-emote", group: "Go to", label: "Emotes", icon: <SmileIcon />, keywords: ["Go to"], hint: section === "emote" ? "Current" : undefined, run: go("emote") },
+      { id: "go-sticker", group: "Go to", label: "Stickers", icon: <StickerIcon />, keywords: ["Go to"], hint: section === "sticker" ? "Current" : undefined, run: go("sticker") },
+      { id: "go-browse", group: "Go to", label: "Browse", icon: <CompassIcon />, keywords: ["Go to", "emoji.gg", "7tv", "noto", "fluent", "import", "find"], hint: section === "browse" ? "Current" : undefined, run: go("browse") },
       ...guilds
         .filter((g) => g.id !== guildId)
-        .map((g) => ({ id: `server-${g.id}`, group: "Servers", label: g.name, icon: <GuildIcon guild={g} size={16} />, keywords: "switch server", run: go(section, g.id) })),
-      { id: "all-servers", group: "Servers", label: "All servers", icon: <ServersIcon />, run: () => router.push("/servers") },
+        .map((g) => ({
+          id: `server-${g.id}`,
+          group: "Servers",
+          label: g.name,
+          icon: <GuildIcon guild={g} size={16} />,
+          keywords: ["Servers", "switch", "server"],
+          run: go(section, g.id),
+        })),
+      { id: "all-servers", group: "Servers", label: "All servers", icon: <ServersIcon />, keywords: ["Servers"], run: () => router.push("/servers") },
       {
         id: "sign-out",
         group: "Account",
         label: "Sign out",
         icon: <LogOutIcon />,
-        keywords: "log out",
+        keywords: ["Account", "log", "out"],
         run: () => {
           const form = Object.assign(document.createElement("form"), { method: "post", action: "/api/auth/logout" });
           document.body.appendChild(form);
@@ -151,168 +169,165 @@ export function CommandMenu({ guildId, guilds }: { guildId: string; guilds: Guil
     return list;
   }, [guildId, guilds, router, section]);
 
-  const rows = useMemo<Row[]>(() => {
-    if (scope) {
-      const q = query.trim();
-      const items: Row[] = (found?.items ?? []).map((r) => ({
-        id: `scope-${r.id}`,
-        group: "Results",
-        label: r.label,
-        detail: r.detail,
-        image: r.image,
-        selected: scope.isSelected?.(r.id) ?? r.selected,
-        run: () => scope.pick(r.id),
-      }));
-      if (q && scope.showAll) {
-        items.push({ id: "show-all", group: "", label: `Show all results for “${q}”`, icon: <SearchIcon />, run: () => scope.showAll!(q) });
-      }
-      return items;
+  const scopedRows = useMemo<Row[]>(() => {
+    if (!scope) return [];
+    const items: Row[] = (found?.items ?? []).map((r) => ({
+      id: `scope-${r.id}`,
+      group: "Results",
+      label: r.label,
+      detail: r.detail,
+      image: r.image,
+      selected: scope.isSelected?.(r.id) ?? r.selected,
+      run: () => scope.pick(r.id),
+    }));
+    const q = query.trim();
+    if (q && scope.showAll && (found?.items.length ?? 0) > 0) {
+      items.push({ id: "show-all", group: "", label: `Show all results for “${q}”`, icon: <SearchIcon />, run: () => scope.showAll!(q) });
     }
-    const q = query.trim().toLowerCase();
-    if (!q) return commands;
-    return commands.filter((c) => `${c.label} ${c.keywords ?? ""} ${c.group}`.toLowerCase().includes(q));
-  }, [scope, found, query, commands]);
+    return items;
+  }, [scope, found, query]);
 
-  useEffect(() => setActive(0), [query, open, scope]);
-  useEffect(() => {
-    listRef.current?.querySelector(`[data-index="${active}"]`)?.scrollIntoView({ block: "nearest" });
-  }, [active]);
-
-  const run = (row: Row | undefined) => {
-    if (!row) return;
-    const keep = row.run();
-    if (keep === true) {
-      // Picked inside a multi-select scope: refresh checkmarks, stay open.
-      setFound((f) => (f ? { ...f, items: [...f.items] } : f));
-      return;
+  const groups = useMemo(() => {
+    const map = new Map<string, Row[]>();
+    for (const row of commands) {
+      const bucket = map.get(row.group) ?? [];
+      bucket.push(row);
+      map.set(row.group, bucket);
     }
-    set({ open: false });
-    setQuery("");
-  };
+    return [...map.entries()];
+  }, [commands]);
 
-  // Commands run after the dialog starts closing, so navigation or a file picker gets focus.
-  const runRow = (row: Row | undefined) => {
-    if (!row) return;
-    if (scope) return run(row);
-    set({ open: false });
-    setQuery("");
-    window.setTimeout(row.run, 0);
-  };
+  const pending = Boolean(scope && (searching || found?.query !== query));
 
-  let lastGroup = "";
-  const pending = scope && (searching || found?.query !== query);
+  const renderItem = (row: Row) => (
+    <CommandItem
+      key={row.id}
+      value={row.id}
+      label={row.label}
+      keywords={row.keywords}
+      onSelect={(event) => {
+        if (scope) {
+          const keep = row.run();
+          if (keep === true) {
+            event.preventDefault();
+            setFound((f) => (f ? { ...f, items: [...f.items] } : f));
+            return;
+          }
+          set({ open: false });
+          setQuery("");
+          return;
+        }
+        set({ open: false });
+        setQuery("");
+        // Run after the dialog begins closing so navigation or the file picker receives focus.
+        window.setTimeout(row.run, 0);
+      }}
+      className={`flex cursor-default items-center gap-2.5 rounded-[8px] px-2.5 text-[13px] text-fg-2 outline-none select-none data-highlighted:bg-hover data-highlighted:text-fg ${
+        row.image ? "h-11" : "h-9"
+      }`}
+    >
+      {row.image ? (
+        <span className="grid size-8 shrink-0 place-items-center">
+          <img src={row.image} alt="" loading="lazy" draggable={false} className="max-h-8 max-w-8 object-contain" />
+        </span>
+      ) : (
+        <CommandItemIcon className="grid size-4 shrink-0 place-items-center text-fg-3">{row.icon}</CommandItemIcon>
+      )}
+      <span dir="auto" className="min-w-0 flex-1 truncate">
+        {row.label}
+        {row.detail ? <span className="ml-2 text-[12px] text-fg-3">{row.detail}</span> : null}
+      </span>
+      {row.selected ? <CheckIcon size={14} className="shrink-0 text-fg" /> : null}
+      {row.hint ? <span className="text-[12px] text-fg-3">{row.hint}</span> : null}
+    </CommandItem>
+  );
 
   return (
-    <Dialog.Root
+    <Dialog
       open={open}
       onOpenChange={(v) => {
         set({ open: v });
         if (!v) setQuery("");
       }}
     >
-      <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0" />
-        <Dialog.Popup
-          aria-label={scope?.label ?? "Command menu"}
-          className="fixed inset-x-0 top-[round(down,14vh,1px)] z-50 mx-auto w-[560px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[14px] bg-overlay shadow-(--shadow-float) outline-none transition-[scale,opacity] duration-150 ease-[var(--ease-out)] data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-ending-style:duration-100 data-starting-style:scale-[0.98] data-starting-style:opacity-0"
+      <DialogBackdrop className="fixed inset-0 z-50 m-0 border-0 bg-black/40 p-0 transition-opacity duration-150 data-ending-style:opacity-0 data-starting-style:opacity-0 motion-reduce:transition-none" />
+      <DialogContent className="fixed inset-x-0 top-[round(down,14vh,1px)] bottom-auto z-50 mx-auto my-0 h-fit w-[560px] max-w-[calc(100vw-1.5rem)] overflow-hidden rounded-[14px] border-0 bg-overlay p-0 shadow-(--shadow-float) outline-none transition-[scale,opacity] duration-150 ease-[var(--ease-out)] data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-ending-style:duration-100 data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-reduce:transition-none">
+        <DialogTitle className="sr-only">{scope?.label ?? "Command menu"}</DialogTitle>
+        <Command
+          query={query}
+          onQueryChange={setQuery}
+          filter={scope ? false : "fuzzy"}
+          status={pending ? "loading" : "idle"}
         >
           <div className="flex h-12 items-center gap-2.5 border-b border-line px-4">
             <SearchIcon className="shrink-0 text-fg-3" />
             {scope ? (
-              // The scope reads like a token in the field; Backspace on an empty field removes it.
-              <button
-                type="button"
+              <Button
+                variant="quiet"
+                aria-label={`Search everything instead of ${scope.label}`}
                 onClick={() => set({ scope: null })}
                 title="Search everything instead"
-                className="group flex h-6 shrink-0 items-center gap-1 rounded-concentric-2 bg-raised pr-1 pl-2 text-[12px] font-medium text-fg-2 hover:text-fg"
+                className="group !h-6 shrink-0 !gap-1 rounded-concentric-2 !pr-1 !pl-2 !text-[12px] text-fg-2 hover:text-fg"
               >
                 {scope.label}
                 <CloseIcon size={11} className="text-fg-3 group-hover:text-fg-2" />
-              </button>
+              </Button>
             ) : null}
-            <input
+            <CommandInput
+              {...searchHints}
               autoFocus
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "ArrowDown") {
-                  e.preventDefault();
-                  setActive((i) => Math.min(rows.length - 1, i + 1));
-                } else if (e.key === "ArrowUp") {
-                  e.preventDefault();
-                  setActive((i) => Math.max(0, i - 1));
-                } else if (e.key === "Enter") {
-                  e.preventDefault();
-                  runRow(rows[active]);
-                } else if (e.key === "Backspace" && !query && scope) {
+                if (e.key === "Backspace" && !query && scope) {
                   e.preventDefault();
                   set({ scope: null });
                 }
               }}
               placeholder={scope ? "Type to search…" : "Type a command or search…"}
-              aria-label={scope?.label ?? "Command"}
-              role="combobox"
-              aria-expanded
-              aria-controls="command-list"
-              aria-activedescendant={rows[active] ? `command-${rows[active]!.id}` : undefined}
-              spellCheck={false}
-              autoComplete="off"
-              className="h-full min-w-0 flex-1 bg-transparent text-[14px] placeholder:text-fg-3"
-              style={{ outline: "none" }}
+              aria-label={scope?.label ?? "Search commands"}
+              className="h-full min-w-0 flex-1 bg-transparent text-[14px] placeholder:text-fg-3 focus-visible:outline-none"
             />
             {pending ? <span aria-hidden className="spinner !size-3.5 shrink-0" /> : null}
           </div>
-          <div ref={listRef} id="command-list" role="listbox" className="max-h-[min(400px,60vh)] overflow-y-auto p-1.5 [scrollbar-width:thin]">
-            {rows.length === 0 ? (
-              <p className="px-3 py-8 text-center text-fg-3">{pending ? "Searching…" : "No results"}</p>
-            ) : (
-              rows.map((row, i) => {
-                const header = row.group && row.group !== lastGroup ? row.group : null;
-                lastGroup = row.group;
-                return (
-                  <div key={row.id}>
-                    {header ? <div className="px-2.5 pt-2.5 pb-1 text-[11.5px] font-medium text-fg-3">{header}</div> : null}
-                    {!row.group && i > 0 ? <div className="-mx-1.5 my-1.5 h-px bg-line" /> : null}
-                    <div
-                      id={`command-${row.id}`}
-                      role="option"
-                      aria-selected={i === active}
-                      data-index={i}
-                      onMouseMove={() => i !== active && setActive(i)}
-                      onClick={() => runRow(row)}
-                      className={`flex cursor-default items-center gap-2.5 rounded-[8px] px-2.5 text-[13px] text-fg-2 aria-selected:bg-hover aria-selected:text-fg ${
-                        row.image ? "h-11" : "h-9"
-                      }`}
-                    >
-                      {row.image ? (
-                        <span className="grid size-8 shrink-0 place-items-center">
-                          <img src={row.image} alt="" loading="lazy" draggable={false} className="max-h-8 max-w-8 object-contain" />
-                        </span>
-                      ) : (
-                        <span className="grid size-4 shrink-0 place-items-center text-fg-3">{row.icon}</span>
-                      )}
-                      <span dir="auto" className="min-w-0 flex-1 truncate">
-                        {row.label}
-                        {row.detail ? <span className="ml-2 text-[12px] text-fg-3">{row.detail}</span> : null}
-                      </span>
-                      {row.selected ? <CheckIcon size={14} className="shrink-0 text-fg" /> : null}
-                      {row.hint ? <span className="text-[12px] text-fg-3">{row.hint}</span> : null}
+          <CommandEmpty className="px-3 py-8 text-center text-fg-3 empty:hidden">
+            {(s) => (s.empty ? (s.loading ? "Searching…" : "No results") : null)}
+          </CommandEmpty>
+          <CommandList className="max-h-[min(400px,60vh)] overflow-y-auto p-1.5 [scrollbar-width:thin] data-empty:hidden">
+            {scope ? (
+              <>
+                {scopedRows.some((r) => r.group === "Results") ? (
+                  <CommandGroup>
+                    <CommandGroupLabel className="px-2.5 pt-2.5 pb-1 text-[11.5px] font-medium text-fg-3">
+                      Results
+                    </CommandGroupLabel>
+                    {scopedRows.filter((r) => r.group === "Results").map(renderItem)}
+                  </CommandGroup>
+                ) : null}
+                {scopedRows
+                  .filter((r) => !r.group)
+                  .map((r) => (
+                    <div key={r.id}>
+                      {scopedRows.length > 1 ? <CommandSeparator className="-mx-1.5 my-1.5 h-px bg-line" /> : null}
+                      {renderItem(r)}
                     </div>
-                  </div>
-                );
-              })
+                  ))}
+              </>
+            ) : (
+              groups.map(([group, items]) => (
+                <CommandGroup key={group}>
+                  <CommandGroupLabel className="px-2.5 pt-2.5 pb-1 text-[11.5px] font-medium text-fg-3">
+                    {group}
+                  </CommandGroupLabel>
+                  {items.map(renderItem)}
+                </CommandGroup>
+              ))
             )}
-          </div>
-        </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
+          </CommandList>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-/**
- * The header search, as a button: it looks like a field but opens the menu scoped to the page.
- * When the page has an active search, it shows that query with a way to clear it.
- */
 export function SearchButton({
   label,
   query,
@@ -327,12 +342,14 @@ export function SearchButton({
   className?: string;
 }) {
   return (
-    <div className={`group relative flex h-7 min-w-0 items-center rounded-[7px] bg-raised transition-[background-color] duration-150 hover:bg-overlay ${className}`}>
-      <button
-        type="button"
+    <div
+      className={`group relative flex h-7 min-w-0 items-center rounded-[7px] bg-raised transition-[background-color] duration-150 hover:bg-overlay ${className}`}
+    >
+      <Button
+        variant="ghost"
         onClick={onOpen}
         aria-label={label}
-        className="flex h-full min-w-0 flex-1 items-center gap-2 rounded-[7px] pr-1.5 pl-2 text-left text-[13px]"
+        className="!h-full min-w-0 flex-1 !justify-start !gap-2 !rounded-[7px] !bg-transparent !pr-1.5 !pl-2 text-left !text-[13px] !font-normal"
       >
         <SearchIcon size={14} className="shrink-0 text-fg-3" />
         <span className={`min-w-0 flex-1 truncate ${query ? "text-fg" : "text-fg-3"}`}>{query || label}</span>
@@ -341,16 +358,16 @@ export function SearchButton({
             /
           </kbd>
         )}
-      </button>
+      </Button>
       {query ? (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           aria-label="Clear search"
           onClick={onClear}
-          className="mr-0.5 grid size-6 shrink-0 place-items-center rounded-concentric-0.5 text-fg-3 hover:text-fg"
+          className="mr-0.5 !size-6 shrink-0 !rounded-concentric-0.5 !p-0 text-fg-3 hover:text-fg"
         >
           <CloseIcon size={13} />
-        </button>
+        </Button>
       ) : null}
     </div>
   );

@@ -1,42 +1,40 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { bindHold } from "@ui-sdk/core";
+import { useEffect, useRef } from "react";
+import { Button } from "../button";
 import { TrashIcon } from "../icons";
 
 const HOLD_MS = 1200;
 
-/** Press and hold to confirm. Slow while deciding, instant on release. */
 export function HoldToDelete({
   onConfirm,
   disabled,
   label = "Hold to delete",
+  confirm = "Deletes this item",
   className = "",
 }: {
   onConfirm: () => void;
   disabled?: boolean;
   label?: string;
+  confirm?: string;
   className?: string;
 }) {
-  const [holding, setHolding] = useState(false);
-  const timer = useRef<number | null>(null);
+  const ref = useRef<HTMLButtonElement>(null);
+  const confirmRef = useRef(onConfirm);
+  confirmRef.current = onConfirm;
 
-  const cancel = () => {
-    if (timer.current) window.clearTimeout(timer.current);
-    timer.current = null;
-    setHolding(false);
-  };
-  const start = () => {
-    if (disabled || timer.current) return;
-    setHolding(true);
-    timer.current = window.setTimeout(() => {
-      timer.current = null;
-      setHolding(false);
-      navigator.vibrate?.(12);
-      onConfirm();
-    }, HOLD_MS);
-  };
-
-  useEffect(() => cancel, []);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || disabled) return;
+    return bindHold(el, {
+      delay: HOLD_MS,
+      onHold: () => {
+        navigator.vibrate?.(12);
+        confirmRef.current();
+      },
+    });
+  }, [disabled]);
 
   const content = (
     <>
@@ -46,26 +44,24 @@ export function HoldToDelete({
   );
 
   return (
-    <button
-      type="button"
+    <Button
+      ref={ref}
+      variant="ghost"
       disabled={disabled}
-      onPointerDown={(e) => e.button === 0 && start()}
-      onPointerUp={cancel}
-      onPointerLeave={cancel}
-      onPointerCancel={cancel}
-      onKeyDown={(e) => (e.key === " " || e.key === "Enter") && !e.repeat && (e.preventDefault(), start())}
-      onKeyUp={(e) => (e.key === " " || e.key === "Enter") && cancel()}
+      data-agent-confirm={confirm}
+      onClick={(_, { source }) => {
+        if (source === "agent") confirmRef.current();
+      }}
       onContextMenu={(e) => e.preventDefault()}
-      className={`pressable relative h-8 w-full touch-none overflow-hidden rounded-[8px] text-[13px] font-medium text-danger transition-[transform,background-color] duration-150 disabled:pointer-events-none disabled:text-fg-3 [@media(hover:hover)]:hover:bg-danger/[0.08] ${className}`}
+      className={`group relative !h-8 w-full touch-none overflow-hidden !rounded-[8px] !px-3 !text-danger disabled:!text-fg-3 data-disabled:!text-fg-3 [@media(hover:hover)]:hover:!bg-danger/[0.08] ${className}`}
     >
       <span className="flex items-center justify-center gap-2">{content}</span>
       <span
         aria-hidden
-        data-on={holding || undefined}
-        className="absolute inset-0 flex items-center justify-center gap-2 bg-danger text-white [clip-path:inset(0_100%_0_0)] [transition:clip-path_180ms_var(--ease-out)] data-[on]:[clip-path:inset(0_0_0_0)] data-[on]:[transition:clip-path_1200ms_linear]"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 bg-danger text-white [clip-path:inset(0_100%_0_0)] [transition:clip-path_180ms_var(--ease-out)] group-data-holding:[clip-path:inset(0_0_0_0)] group-data-holding:[transition:clip-path_var(--hold-delay,1200ms)_linear]"
       >
         {content}
       </span>
-    </button>
+    </Button>
   );
 }

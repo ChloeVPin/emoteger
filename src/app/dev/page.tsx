@@ -58,8 +58,9 @@ export default async function Dev({ searchParams }: PageProps<"/dev">) {
 
       <nav
         aria-label="Dev data"
+        data-agent-hidden
         style={{ font: "12px system-ui", position: "fixed", left: "50%", bottom: 12, transform: "translateX(-50%)", zIndex: 100 }}
-        className="flex gap-1 rounded-full bg-neutral-200 p-1 text-neutral-700"
+        className="flex max-w-[calc(100vw-1.5rem)] gap-1 overflow-x-auto rounded-full bg-neutral-200 p-1 whitespace-nowrap text-neutral-700 [scrollbar-width:none]"
       >
         {SCREENS.map((s) => (
           <a key={s} href={`/dev?screen=${s}&data=${set}`} className={`rounded-full px-2.5 py-1 ${s === screen ? "bg-white text-black" : ""}`}>

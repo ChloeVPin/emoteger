@@ -6,25 +6,38 @@ import type { GuildDetail, Pack } from "@/lib/types";
 import { Button } from "../button";
 import { ArrowUpRightIcon, DownloadIcon, PlusIcon } from "../icons";
 import { bulk } from "../manager/bulk";
+import { TileGrid, TileGridItem } from "../tile-grid-parts";
 
 type Owned = { name: string; animated: boolean }[];
 
-export function PackGrid({ packs, selected, onSelect }: { packs: Pack[]; selected: string | null; onSelect: (id: string) => void }) {
+export function PackGrid({
+  packs,
+  selected,
+  onSelect,
+}: {
+  packs: Pack[];
+  selected: string | null;
+  onSelect: (id: string | null) => void;
+}) {
   return (
-    // Fixed slots (preview, one-line title, two-line tagline, footer) keep every card the same height.
-    <ul className="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(232px,1fr))] gap-2 p-1">
-      {packs.map((pack) => {
+    <TileGrid
+      aria-label="Packs"
+      value={selected}
+      onValueChange={(next) => onSelect(typeof next === "string" ? next : null)}
+      className="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(232px,1fr))] gap-2 p-1"
+    >
+      {packs.map((pack, index) => {
         const animated = pack.items.filter((i) => i.animated).length;
         const noun = pack.kind === "sticker" ? "sticker" : "emote";
         return (
           <li key={pack.id} className="flex min-w-0">
-            <button
-              type="button"
-              aria-pressed={selected === pack.id}
-              onClick={() => onSelect(pack.id)}
+            <TileGridItem
+              value={pack.id}
+              label={pack.title}
+              aria-label={pack.title}
+              index={index}
               className="tile group flex h-full w-full flex-col gap-3 rounded-[16px] bg-surface p-2 pb-3 text-left"
             >
-              {/* Preview strip: the first six items. */}
               <span className="grid h-[60px] shrink-0 grid-cols-6 place-items-center gap-1 rounded-concentric bg-bg px-2">
                 {pack.items.slice(0, 6).map((item) => (
                   <img
@@ -46,11 +59,11 @@ export function PackGrid({ packs, selected, onSelect }: { packs: Pack[]; selecte
                   {animated === pack.items.length ? " · all animated" : ""}
                 </span>
               </span>
-            </button>
+            </TileGridItem>
           </li>
         );
       })}
-    </ul>
+    </TileGrid>
   );
 }
 
@@ -68,7 +81,6 @@ export function PackDetails({
   const mine = owned[pack.kind];
   const taken = useMemo(() => new Set(mine.map((e) => e.name.toLowerCase())), [mine]);
 
-  // Anything already in the server under the same name is skipped, so adding twice is harmless.
   const toAdd = pack.items.filter((i) => !taken.has(i.name.toLowerCase()));
   const skipped = pack.items.length - toAdd.length;
 
@@ -116,14 +128,23 @@ export function PackDetails({
           {pack.items.map((item) => {
             const have = taken.has(item.name.toLowerCase());
             return (
-              <li key={`${item.source}:${item.id}`} title={`${item.name}${item.author ? ` · by ${item.author}` : ""}${have ? " · already added" : ""}`}>
+              <li
+                key={`${item.source}:${item.id}`}
+                title={`${item.name}${item.author ? ` · by ${item.author}` : ""}${have ? " · already added" : ""}`}
+              >
                 <a
                   href={item.page}
                   target="_blank"
                   rel="noreferrer"
                   className="grid aspect-square place-items-center rounded-[8px] bg-bg transition-colors duration-150 hover:bg-raised"
                 >
-                  <img src={item.preview} alt={item.name} loading="lazy" draggable={false} className={`h-7 w-auto max-w-[80%] object-contain ${have ? "opacity-35" : ""}`} />
+                  <img
+                    src={item.preview}
+                    alt={item.name}
+                    loading="lazy"
+                    draggable={false}
+                    className={`h-7 w-auto max-w-[80%] object-contain ${have ? "opacity-35" : ""}`}
+                  />
                 </a>
               </li>
             );
@@ -131,8 +152,8 @@ export function PackDetails({
         </ul>
 
         <div className="flex flex-col gap-2.5 text-[13px] leading-[19px] text-fg-2">
-          {pack.lore.map((p, i) => (
-            <p key={i}>{p}</p>
+          {pack.lore.map((p) => (
+            <p key={p}>{p}</p>
           ))}
         </div>
 
@@ -140,7 +161,13 @@ export function PackDetails({
           <div className="flex flex-col gap-1">
             <span className="text-[12px] font-medium text-fg-3">Sources</span>
             {pack.sources.map((s) => (
-              <a key={s.url} href={s.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-[12px] text-fg-3 hover:text-fg-2">
+              <a
+                key={s.url}
+                href={s.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1 text-[12px] text-fg-3 hover:text-fg-2"
+              >
                 <span className="truncate">{s.label}</span>
                 <ArrowUpRightIcon size={11} className="shrink-0" />
               </a>
@@ -159,10 +186,14 @@ export function PackDetails({
           <PlusIcon size={15} />
           {toAdd.length ? `Add ${toAdd.length} ${toAdd.length === 1 ? noun : `${noun}s`}` : "All added"}
         </Button>
-        <a href={`/api/packs/${pack.id}/zip`} download className="pressable mt-2 flex h-8 w-full items-center justify-center gap-1.5 rounded-[8px] text-[13px] font-medium text-fg-2 transition-[filter,background-color,color] duration-150 hover:bg-hover hover:text-fg">
+        <Button
+          variant="ghost"
+          render={<a href={`/api/packs/${pack.id}/zip`} download />}
+          className="mt-2 w-full"
+        >
           <DownloadIcon size={15} className="text-fg-3" />
           Download .zip
-        </a>
+        </Button>
       </div>
     </div>
   );

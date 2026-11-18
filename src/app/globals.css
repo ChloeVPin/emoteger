@@ -1,3 +1,5 @@
+@layer ui-sdk;
+
 @import "tailwindcss";
 @import "tailwindcss-concentric";
 
@@ -94,7 +96,7 @@
 */
 @utility pressable {
   transition: filter 120ms ease;
-  &:active:not(:disabled) {
+  &:active:not(:disabled):not([data-disabled]):not([aria-disabled="true"]) {
     filter: brightness(0.88);
   }
 }
@@ -129,7 +131,7 @@
     background-color 120ms ease,
     box-shadow 120ms ease;
 }
-.tile:active:not(:disabled) {
+.tile:active:not(:disabled):not([data-disabled]):not([aria-disabled="true"]) {
   background-color: var(--color-press);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -138,7 +140,7 @@
   }
 }
 /* Selection stays neutral so it never competes with the emotes' own color. */
-.tile[aria-pressed="true"] {
+.tile:is([aria-pressed="true"], [data-pressed]) {
   background-color: oklch(1 0 0 / 0.08);
   box-shadow: inset 0 0 0 1.5px oklch(1 0 0 / 0.5);
 }
@@ -146,6 +148,138 @@
   opacity: 0;
   transform: scale(0.92);
   pointer-events: none;
+}
+
+[data-slot="toast-region"] {
+  position: fixed;
+  inset: auto;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 50%;
+  translate: -50%;
+  z-index: 60;
+  width: 356px;
+  max-width: calc(100vw - 1.5rem);
+  height: var(--toast-front-height, 0px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  pointer-events: none;
+}
+[data-slot="toast-region"][data-expanded] {
+  height: calc(var(--toast-stack-height, 0px) + (var(--toast-count, 1) - 1) * 8px);
+}
+[data-slot="toast-list"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+[data-slot="toast"] {
+  --y: calc(var(--toast-index, 0) * -8px);
+  pointer-events: auto;
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: calc(100 - var(--toast-index, 0));
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: var(--toast-height, auto);
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--color-overlay);
+  padding: 0.625rem 0.75rem;
+  color: var(--color-fg);
+  font-size: 13px;
+  box-shadow: var(--shadow-float);
+  user-select: none;
+  translate: var(--toast-swipe-x, 0px) calc(var(--y) + var(--toast-swipe-y, 0px));
+  scale: calc(1 - var(--toast-index, 0) * 0.04);
+  transition:
+    translate 360ms var(--ease-out),
+    scale 360ms var(--ease-out),
+    opacity 240ms ease,
+    height 360ms var(--ease-out);
+}
+[data-slot="toast"]:not([data-front], [data-expanded]) {
+  height: var(--toast-front-height, auto);
+}
+[data-slot="toast"][data-expanded] {
+  --y: calc(-1 * (var(--toast-offset, 0px) + var(--toast-index, 0) * 8px));
+  scale: 1;
+}
+[data-slot="toast"][data-starting-style] {
+  transition: none;
+}
+[data-slot="toast"][data-starting-style][data-front] {
+  --y: 100%;
+  opacity: 0;
+}
+[data-slot="toast"]:is([data-starting-style]:not([data-front]), [data-ending-style]) {
+  opacity: 0;
+}
+[data-slot="toast"][data-swiping] {
+  transition: none;
+}
+[data-slot="toast"] [data-show] {
+  display: none;
+}
+[data-slot="toast"][data-type="success"] [data-show="success"],
+[data-slot="toast"][data-type="error"] [data-show="error"],
+[data-slot="toast"][data-type="loading"] [data-show="loading"] {
+  display: grid;
+}
+
+[data-slot="drawer-backdrop"][data-hidden] {
+  display: none;
+}
+[data-slot="drawer-viewport"] {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+[data-slot="drawer-viewport"][data-side="top"] {
+  justify-content: flex-start;
+}
+[data-slot="drawer-viewport"]:is([data-side="left"], [data-side="right"]) {
+  flex-direction: row;
+}
+[data-slot="drawer-viewport"][data-side="left"] > * {
+  margin-right: auto;
+}
+[data-slot="drawer-viewport"][data-side="right"] > * {
+  margin-left: auto;
+}
+[data-slot="drawer-viewport"] > * {
+  pointer-events: auto;
+}
+
+/* Overscroll rubber-banding pulls a drawer past the viewport edge; extend its surface behind it. */
+[data-slot="drawer-content"]::after {
+  position: absolute;
+  background: inherit;
+  content: "";
+}
+[data-slot="drawer-content"][data-side="bottom"]::after {
+  inset-inline: 0;
+  top: 100%;
+  height: 6rem;
+}
+[data-slot="drawer-content"][data-side="left"]::after {
+  inset-block: 0;
+  right: 100%;
+  width: 6rem;
 }
 
 /* Newly uploaded emotes scale in. */
@@ -179,6 +313,9 @@
   }
   .pop-in {
     animation: fade 200ms ease backwards;
+  }
+  [data-slot="toast"] {
+    transition-property: opacity;
   }
 }
 

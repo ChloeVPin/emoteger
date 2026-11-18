@@ -1,11 +1,10 @@
 "use client";
 
+import { toast } from "@ui-sdk/react/toast";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { CheckIcon } from "../icons";
 
-/** Runs an action and, when it's a copy, morphs its icon into a check for a moment. */
 export function useFlash() {
   const [done, setDone] = useState(false);
   const timer = useRef(0);
@@ -48,5 +47,5 @@ export async function copyText(text: string, flash: () => void) {
 
 export const quietButton =
   "pressable inline-flex h-8 min-w-0 items-center justify-center gap-1.5 rounded-[8px] px-3 text-[13px] font-medium text-fg " +
-  "bg-raised transition-[filter,background-color] duration-150 disabled:opacity-40 " +
+  "bg-raised transition-[filter,background-color] duration-150 disabled:opacity-40 data-disabled:opacity-40 " +
   "[@media(hover:hover)]:hover:bg-overlay";

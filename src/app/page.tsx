@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { buttonClass } from "@/components/button";
+import { Button } from "@/components/button";
 import { DiscordIcon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { getSession } from "@/lib/session";
@@ -22,10 +22,10 @@ export default async function SignIn({ searchParams }: PageProps<"/">) {
         <Logo size={44} priority />
         <h1 className="display mt-6 text-[22px] font-semibold">Emoteger</h1>
         <p className="mt-1 text-[15px] text-fg-2">Manage your server&rsquo;s emotes.</p>
-        <a href="/api/auth/login" className={buttonClass("sun", "lg", "mt-8 w-full")}>
+        <Button variant="sun" size="lg" render={<a href="/api/auth/login" />} className="mt-8 w-full">
           <DiscordIcon size={17} />
           Continue with Discord
-        </a>
+        </Button>
         {message ? (
           <p role="alert" className="mt-4 text-[13px] text-fg-2">
             {message}

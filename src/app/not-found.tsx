@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClass } from "@/components/button";
+import { Button } from "@/components/button";
 import { Logo } from "@/components/logo";
 
 export default function NotFound() {
@@ -9,9 +9,9 @@ export default function NotFound() {
         <Logo size={36} className="opacity-70 grayscale" />
         <h1 className="display mt-5 text-[18px] font-semibold">Nothing here</h1>
         <p className="mt-1 text-fg-2">This server isn&rsquo;t available to you, or the link is wrong.</p>
-        <Link href="/servers" className={buttonClass("quiet", "md", "mt-6")}>
+        <Button variant="quiet" render={<Link href="/servers" />} className="mt-6">
           Back to servers
-        </Link>
+        </Button>
       </div>
     </main>
   );

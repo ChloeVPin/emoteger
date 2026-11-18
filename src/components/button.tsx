@@ -1,3 +1,4 @@
+import { Button as SdkButton } from "@ui-sdk/react/button";
 import type { ComponentProps } from "react";
 
 type Variant = "sun" | "quiet" | "ghost";
@@ -5,7 +6,8 @@ type Size = "md" | "lg";
 
 const base =
   "pressable inline-flex items-center justify-center gap-1.5 font-medium whitespace-nowrap " +
-  "transition-[filter,background-color,color] duration-150 disabled:opacity-50 disabled:pointer-events-none";
+  "transition-[filter,background-color,color] duration-150 disabled:opacity-50 disabled:pointer-events-none " +
+  "data-disabled:opacity-50 data-disabled:pointer-events-none data-pending:opacity-65";
 
 const variants: Record<Variant, string> = {
   sun: "bg-sun text-ink shadow-[inset_0_1px_0_oklch(1_0_0/0.28)] [@media(hover:hover)]:hover:bg-sun-hi",
@@ -27,8 +29,8 @@ export function Button({
   size = "md",
   className = "",
   ...props
-}: ComponentProps<"button"> & { variant?: Variant; size?: Size }) {
-  return <button type="button" className={buttonClass(variant, size, className)} {...props} />;
+}: Omit<ComponentProps<typeof SdkButton>, "className"> & { variant?: Variant; size?: Size; className?: string }) {
+  return <SdkButton className={buttonClass(variant, size, className)} {...props} />;
 }
 
 export function Kbd({ children }: { children: React.ReactNode }) {

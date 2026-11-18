@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { SessionUser } from "@/lib/session";
 import { BulkStatus } from "./bulk-status";
+import { Button } from "./button";
 import { Logo } from "./logo";
 import { UserMenu } from "./user-menu";
 
@@ -18,9 +19,14 @@ export function AppHeader({
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg [padding-top:env(safe-area-inset-top)]">
       <div className="flex h-12 items-center gap-1.5 px-3 sm:px-4">
-        <Link href="/servers" aria-label="Servers" className="pressable grid size-8 shrink-0 place-items-center rounded-[8px]">
+        <Button
+          variant="ghost"
+          render={<Link href="/servers" />}
+          aria-label="All servers"
+          className="!size-8 shrink-0 !p-0"
+        >
           <Logo size={22} priority />
-        </Link>
+        </Button>
         {children}
         <div className="ml-auto flex shrink-0 items-center gap-2 pl-2">
           {actions}

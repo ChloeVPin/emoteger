@@ -1,22 +1,26 @@
 "use client";
 
-import { AnimatePresence, motion, useDragControls } from "motion/react";
+import { Drawer, DrawerBackdrop, DrawerClose, DrawerContent, DrawerTitle, createDrawerController } from "@ui-sdk/react/drawer";
+import { FileInput, FileInputTrigger, createFileInputController } from "@ui-sdk/react/file-input";
+import { useShortcut } from "@ui-sdk/react/shortcuts";
+import { toast } from "@ui-sdk/react/toast";
+import { AnimatePresence, motion } from "motion/react";
+import Link from "next/link";
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
 import type { SessionUser } from "@/lib/session";
 import type { AssetKind, GuildDetail } from "@/lib/types";
-import Link from "next/link";
-import { Button, buttonClass } from "../button";
+import { Button } from "../button";
 import { PAGE_COMMAND, type PageCommand, SearchButton, commandMenu } from "../command-menu";
-import { MoreIcon, PlusIcon, SmileIcon, StickerIcon, TrashIcon, UploadIcon } from "../icons";
+import { CloseIcon, MoreIcon, PlusIcon, SmileIcon, StickerIcon, TrashIcon, UploadIcon } from "../icons";
+import { Menu, MenuContent, MenuItem, MenuItemIcon, MenuTrigger, itemClass, popupClass } from "../menu";
 import { PageHeader, headerButton } from "../page-header";
-import { Menu, itemClass, popupClass } from "../menu";
+import { TileGrid } from "../tile-grid-parts";
 import { RateLimited, api } from "./api";
+import { bulk, useBulk } from "./bulk";
 import { DropOverlay } from "./drop-overlay";
 import { Inspector } from "./inspector";
-import { Overview } from "./overview";
-import { bulk, useBulk } from "./bulk";
 import { KINDS, type KindConfig } from "./kinds";
+import { Overview } from "./overview";
 import { Segmented } from "./segmented";
 import { AddTile, Tile } from "./tile";
 import type { Fields, Filter, Item } from "./types";
@@ -24,7 +28,7 @@ import { useMediaQuery } from "./use-media-query";
 
 const REMOVE_MS = 180;
 
-const isEditable = (el: EventTarget | null) =>
+const isEditable = (el: Element | null) =>
   el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
 
 export function Library({
@@ -47,13 +51,12 @@ export function Library({
   const [via, setVia] = useState<"pointer" | "keyboard">("pointer");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
-  const [dragging, setDragging] = useState(false);
   const [fresh] = useState(() => new Set<string>());
+  const [uploader] = useState(createFileInputController);
   const deferredQuery = useDeferredValue(query);
   const deferredFilter = useDeferredValue(filter);
 
   const itemsRef = useRef(items);
-  const fileInput = useRef<HTMLInputElement>(null);
   const gridRef = useRef<HTMLUListElement>(null);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
@@ -81,11 +84,6 @@ export function Library({
   }, [items, deferredFilter, deferredQuery]);
 
   const selected = items.find((i) => i.key === selectedKey && i.status !== "removing") ?? null;
-
-  const select = useCallback((key: string, how: "pointer" | "keyboard") => {
-    setVia(how);
-    setSelectedKey((current) => (current === key && how === "pointer" ? null : key));
-  }, []);
 
   const close = useCallback(() => setSelectedKey(null), []);
 
@@ -209,7 +207,7 @@ export function Library({
           return await api.remove(kind, guild.id, item.id);
         } catch (error) {
           if (!(error instanceof RateLimited)) throw error;
-          toast(`Waiting on Discord`, { description: `Deleting ${cfg.quote(item.name)} in ${Math.ceil(error.retryAfter)}s` });
+          toast("Waiting on Discord", { description: `Deleting ${cfg.quote(item.name)} in ${Math.ceil(error.retryAfter)}s` });
           await new Promise((r) => setTimeout(r, error.retryAfter * 1000));
           return attempt();
         }
@@ -245,18 +243,16 @@ export function Library({
       skipped: itemsRef.current.filter((i) => i.managed).length,
     });
 
-  // Actions requested from the ⌘K menu.
   useEffect(() => {
     const onCommand = (e: Event) => {
       const cmd = (e as CustomEvent<PageCommand>).detail;
-      if (cmd === "upload") fileInput.current?.click();
+      if (cmd === "upload") uploader.open();
       if (cmd === "delete-all") askDeleteAll();
     };
     window.addEventListener(PAGE_COMMAND, onCommand);
     return () => window.removeEventListener(PAGE_COMMAND, onCommand);
   });
 
-  // A bulk job may outlive this page: drop what it already deleted, and follow along live.
   useEffect(() => {
     setItems((prev) => prev.filter((i) => !i.id || !bulk.wasDeleted(i.id)));
     return bulk.onDeleted((gid, k, id) => {
@@ -267,7 +263,6 @@ export function Library({
     });
   }, [guild.id, kind]);
 
-  // The header search opens the command menu scoped to this library.
   const openSearch = useCallback(() => {
     commandMenu.open({
       label: `Search ${cfg.plural}`,
@@ -287,85 +282,19 @@ export function Library({
       },
       pick: (key) => {
         setQuery("");
-        select(key, "pointer");
+        setVia("pointer");
+        setSelectedKey((current) => (current === key ? null : key));
         requestAnimationFrame(() => gridRef.current?.querySelector(`[data-key="${key}"]`)?.scrollIntoView({ block: "nearest" }));
       },
       showAll: (q) => setQuery(q),
     });
-  }, [cfg, query, select]);
+  }, [cfg, query]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "/" && !isEditable(e.target)) {
-        e.preventDefault();
-        openSearch();
-      } else if (e.key === "Escape" && !isEditable(e.target)) {
-        setSelectedKey(null);
-      }
-    };
-
-    let depth = 0;
-    const hasFiles = (e: DragEvent) => e.dataTransfer?.types.includes("Files");
-    const onEnter = (e: DragEvent) => {
-      if (!hasFiles(e)) return;
-      depth++;
-      setDragging(true);
-    };
-    const onOver = (e: DragEvent) => {
-      if (hasFiles(e)) e.preventDefault();
-    };
-    const onLeave = (e: DragEvent) => {
-      if (!hasFiles(e)) return;
-      depth = Math.max(0, depth - 1);
-      if (depth === 0) setDragging(false);
-    };
-    const onDrop = (e: DragEvent) => {
-      if (!hasFiles(e)) return;
-      e.preventDefault();
-      depth = 0;
-      setDragging(false);
-      void upload([...(e.dataTransfer?.files ?? [])]);
-    };
-    const onPaste = (e: ClipboardEvent) => {
-      if (isEditable(e.target)) return;
-      const files = [...(e.clipboardData?.files ?? [])].filter((f) => f.type.startsWith("image/"));
-      if (files.length) {
-        e.preventDefault();
-        void upload(files);
-      }
-    };
-
-    window.addEventListener("keydown", onKey);
-    window.addEventListener("dragenter", onEnter);
-    window.addEventListener("dragover", onOver);
-    window.addEventListener("dragleave", onLeave);
-    window.addEventListener("drop", onDrop);
-    window.addEventListener("paste", onPaste);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("dragenter", onEnter);
-      window.removeEventListener("dragover", onOver);
-      window.removeEventListener("dragleave", onLeave);
-      window.removeEventListener("drop", onDrop);
-      window.removeEventListener("paste", onPaste);
-    };
-  }, [upload, openSearch]);
-
-  /** Arrow keys move through the grid; selection follows focus once something is open. */
-  const onGridKey = (e: React.KeyboardEvent<HTMLUListElement>) => {
-    const deltas: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1 };
-    const grid = gridRef.current;
-    if (!grid || !(e.target instanceof HTMLButtonElement)) return;
-    const columns = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
-    const delta = deltas[e.key] ?? (e.key === "ArrowUp" ? -columns : e.key === "ArrowDown" ? columns : 0);
-    if (!delta) return;
-    e.preventDefault();
-    const buttons = [...grid.querySelectorAll<HTMLButtonElement>("button[data-key]")];
-    const next = buttons[buttons.indexOf(e.target) + delta];
-    if (!next) return;
-    next.focus({ preventScroll: false });
-    if (selectedKey) select(next.dataset.key!, "keyboard");
-  };
+  useShortcut("/", openSearch, { description: `Search ${cfg.plural}` });
+  useShortcut("escape", () => setSelectedKey(null), {
+    description: "Deselect",
+    when: () => selectedKey !== null && isDesktop,
+  });
 
   const filterOptions = [
     { value: "all" as const, label: "All" },
@@ -373,58 +302,76 @@ export function Library({
     { value: "animated" as const, label: "Animated" },
   ];
 
-  const search = (
-    <SearchButton
-      label={`Search ${cfg.plural}`}
-      query={query}
-      onOpen={openSearch}
-      onClear={() => setQuery("")}
-      className="flex-1 sm:max-w-56 lg:w-52 lg:flex-none"
-    />
-  );
+  const labelTitle = kind === "sticker" ? "Stickers" : "Emotes";
 
   return (
-    <>
-      <PageHeader icon={kind === "sticker" ? <StickerIcon /> : <SmileIcon />} title={kind === "sticker" ? "Stickers" : "Emotes"} count={counts.all}>
-        {search}
+    <FileInput
+      multiple
+      accept={cfg.accept}
+      controller={uploader}
+      announcement={() => null}
+      onValueChange={(_, details) => {
+        if (details.reason === "paste" && isEditable(document.activeElement)) {
+          details.cancel();
+          return;
+        }
+        if (details.added.length) {
+          const batch = [...details.added];
+          details.cancel();
+          void upload(batch);
+        }
+      }}
+      onReject={() => toast.error(`Use ${cfg.acceptHint}`)}
+    >
+      <PageHeader icon={kind === "sticker" ? <StickerIcon /> : <SmileIcon />} title={labelTitle} count={counts.all}>
+        <SearchButton
+          label={`Search ${cfg.plural}`}
+          query={query}
+          onOpen={openSearch}
+          onClear={() => setQuery("")}
+          className="flex-1 sm:max-w-56 lg:w-52 lg:flex-none"
+        />
         <Segmented size="sm" label={`Filter ${cfg.plural}`} options={filterOptions} value={filter} onChange={setFilter} />
         <div className="ml-auto flex shrink-0 items-center gap-0.5 lg:ml-0">
-          <Menu.Root>
-            <Menu.Trigger aria-label="More actions" className={`${headerButton} w-7 px-0`}>
+          <Menu
+            onAction={(value) => {
+              if (value === "show-progress") bulk.setOpen(true);
+              if (value === "delete-all") askDeleteAll();
+            }}
+          >
+            <MenuTrigger aria-label="More actions" className={`${headerButton} w-7 px-0`}>
               <MoreIcon size={16} />
-            </Menu.Trigger>
-            <Menu.Portal>
-              <Menu.Positioner sideOffset={6} align="end" className="z-50">
-                <Menu.Popup className={popupClass}>
-                  {busy ? (
-                    <Menu.Item onClick={() => bulk.setOpen(true)} className={itemClass}>
-                      Show progress
-                    </Menu.Item>
-                  ) : (
-                    <Menu.Item
-                      disabled={!items.some((i) => i.id && !i.managed)}
-                      onClick={askDeleteAll}
-                      className={`${itemClass} text-danger data-highlighted:bg-danger/10`}
-                    >
-                      <TrashIcon />
-                      Delete all {cfg.plural}…
-                    </Menu.Item>
-                  )}
-                </Menu.Popup>
-              </Menu.Positioner>
-            </Menu.Portal>
-          </Menu.Root>
-          <button type="button" onClick={() => fileInput.current?.click()} className={headerButton} aria-label={`Upload ${cfg.plural}`}>
+            </MenuTrigger>
+            <MenuContent sideOffset={6} align="end" className={popupClass}>
+              {busy ? (
+                <MenuItem value="show-progress" className={itemClass}>
+                  Show progress
+                </MenuItem>
+              ) : (
+                <MenuItem
+                  value="delete-all"
+                  destructive
+                  disabled={!items.some((i) => i.id && !i.managed)}
+                  className={`${itemClass} text-danger data-highlighted:bg-danger/10`}
+                >
+                  <MenuItemIcon>
+                    <TrashIcon />
+                  </MenuItemIcon>
+                  Delete all {cfg.plural}…
+                </MenuItem>
+              )}
+            </MenuContent>
+          </Menu>
+          <FileInputTrigger controller={uploader} className={headerButton} aria-label={`Upload ${cfg.plural}`}>
             <PlusIcon size={15} />
             <span className="hidden sm:inline">Upload</span>
-          </button>
+          </FileInputTrigger>
         </div>
       </PageHeader>
 
       <div className="lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex min-w-0 flex-col lg:min-h-0">
-          {/* Desktop: the grid is the only thing that scrolls, so the scrollbar lives beside it. */}
-          <section aria-label="Emotes" className="emote-scroll min-w-0 flex-1 px-2 pt-3 pb-28 sm:px-3 lg:overflow-y-auto lg:pb-10">
+          <section aria-label={labelTitle} className="emote-scroll min-w-0 flex-1 px-2 pt-3 pb-28 sm:px-3 lg:overflow-y-auto lg:pb-10">
             {counts.all === 0 ? (
               <div className="grid min-h-[50dvh] place-items-center px-6">
                 <div className="flex max-w-[280px] flex-col items-center text-center">
@@ -434,13 +381,13 @@ export function Library({
                   <p className="mt-4 text-[14px] font-medium">No {cfg.plural} yet</p>
                   <p className="mt-1 text-fg-2">Drop images here, paste one, or upload from your computer.</p>
                   <div className="mt-5 flex gap-2">
-                    <Button variant="quiet" onClick={() => fileInput.current?.click()}>
-                      Upload
+                    <Button variant="quiet" onClick={() => uploader.open()}>
+                      Upload {cfg.noun}
                     </Button>
                     {kind === "emote" ? (
-                      <Link href={`/servers/${guild.id}/browse`} className={buttonClass("quiet")}>
+                      <Button variant="quiet" render={<Link href={`/servers/${guild.id}/browse`} />}>
                         Browse emotes
-                      </Link>
+                      </Button>
                     ) : null}
                   </div>
                 </div>
@@ -450,9 +397,15 @@ export function Library({
                 No {cfg.plural} match{query ? <> &ldquo;{query.trim()}&rdquo;</> : " this filter"}.
               </p>
             ) : (
-              <ul
+              <TileGrid
                 ref={gridRef}
-                onKeyDown={onGridKey}
+                aria-label={labelTitle}
+                value={selectedKey}
+                followFocus={selectedKey !== null}
+                onValueChange={(next, details) => {
+                  setVia(details.source === "keyboard" ? "keyboard" : "pointer");
+                  setSelectedKey(typeof next === "string" ? next : null);
+                }}
                 className={`grid gap-1 ${
                   kind === "sticker"
                     ? "grid-cols-[repeat(auto-fill,minmax(104px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(128px,1fr))]"
@@ -466,26 +419,31 @@ export function Library({
                     index={index}
                     fresh={fresh.has(item.key)}
                     selected={item.key === selectedKey}
-                    onSelect={select}
                     cfg={cfg}
                   />
                 ))}
-                {!query && filter === "all" ? <AddTile large={kind === "sticker"} onClick={() => fileInput.current?.click()} /> : null}
-              </ul>
+                {!query && filter === "all" ? (
+                  <AddTile noun={cfg.noun} large={kind === "sticker"} onClick={() => uploader.open()} />
+                ) : null}
+              </TileGrid>
             )}
           </section>
         </div>
 
-        <aside aria-label="Details" className="hidden min-h-0 overflow-y-auto border-l border-line [scrollbar-width:thin] lg:block">
+        <aside
+          aria-label="Details"
+          data-agent-hidden={!isDesktop ? "" : undefined}
+          className="hidden min-h-0 overflow-y-auto border-l border-line [scrollbar-width:thin] lg:block"
+        >
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.div
-              key={selected ? selected.key : "overview"}
+              key={isDesktop && selected ? selected.key : "overview"}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.06 } }}
               transition={via === "keyboard" ? { duration: 0 } : { duration: 0.14, ease: "easeOut" }}
             >
-              {selected ? (
+              {isDesktop && selected ? (
                 <Inspector cfg={cfg} item={selected} onUpdate={update} onDelete={remove} onClose={close} />
               ) : (
                 <Overview cfg={cfg} guild={guild} counts={counts} />
@@ -497,24 +455,11 @@ export function Library({
 
       {!isDesktop ? <Sheet cfg={cfg} item={selected} onUpdate={update} onDelete={remove} onClose={close} /> : null}
 
-      <DropOverlay show={dragging} />
-
-      <input
-        ref={fileInput}
-        type="file"
-        multiple
-        accept={cfg.accept.join(",")}
-        className="hidden"
-        onChange={(e) => {
-          void upload([...(e.target.files ?? [])]);
-          e.target.value = "";
-        }}
-      />
-    </>
+      <DropOverlay />
+    </FileInput>
   );
 }
 
-/** Small screens: the inspector rises as a sheet that follows the finger and can be flicked away. */
 function Sheet({
   cfg,
   item,
@@ -528,47 +473,58 @@ function Sheet({
   onDelete: (key: string) => void;
   onClose: () => void;
 }) {
-  const controls = useDragControls();
+  const [sheet] = useState(createDrawerController);
+  const [cached, setCached] = useState<Item | null>(item);
+  if (item && item !== cached) setCached(item);
+  const shown = item ?? cached;
+
   return (
-    <AnimatePresence>
-      {item ? (
-        <>
-          <motion.div
-            key="scrim"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/55"
-          />
-          <motion.div
-            key="sheet"
-            role="dialog"
-            aria-label={cfg.quote(item.name)}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", bounce: 0, duration: 0.36 }}
-            drag="y"
-            dragControls={controls}
-            dragListener={false}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0.04, bottom: 0.9 }}
-            onDragEnd={(_, info) => {
-              if (info.offset.y > 120 || info.velocity.y > 500) onClose();
-            }}
-            className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[88dvh] w-full max-w-[440px] overflow-y-auto rounded-t-[20px] bg-overlay pb-[env(safe-area-inset-bottom)] shadow-(--shadow-float) [scrollbar-width:none]"
-          >
-            <div
-              onPointerDown={(e) => controls.start(e)}
-              className="sticky top-0 z-10 flex h-5 cursor-grab touch-none items-end justify-center bg-overlay"
-            >
-              <span className="h-1 w-8 rounded-full bg-fg-3/50" />
-            </div>
-            <Inspector key={item.key} cfg={cfg} item={item} onUpdate={onUpdate} onDelete={onDelete} onClose={onClose} />
-          </motion.div>
-        </>
-      ) : null}
-    </AnimatePresence>
+    <Drawer
+      side="bottom"
+      driver="pointer"
+      physics={{ response: 0.26, dampingRatio: 1 }}
+      controller={sheet}
+      open={item !== null}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+      onOpenChangeComplete={(open) => {
+        if (!open) setCached(null);
+      }}
+    >
+      <DrawerBackdrop className="fixed inset-0 z-40 m-0 border-0 bg-black/55 p-0" />
+      <DrawerContent
+        initialFocus="content"
+        className="relative z-50 mx-auto flex h-fit max-h-[88dvh] w-full max-w-[440px] flex-col rounded-t-[20px] border-0 bg-overlay pb-[env(safe-area-inset-bottom)] shadow-(--shadow-float) outline-none"
+      >
+        <DrawerTitle className="sr-only">{shown ? cfg.quote(shown.name) : "Details"}</DrawerTitle>
+        <div aria-hidden className="flex h-5 shrink-0 items-end justify-center">
+          <span className="h-1 w-8 rounded-full bg-fg-3/50" />
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-width:none]">
+          {shown ? (
+            <Inspector
+              key={shown.key}
+              cfg={cfg}
+              item={shown}
+              onUpdate={onUpdate}
+              onDelete={(key) => {
+                sheet.close();
+                onDelete(key);
+              }}
+              onClose={() => sheet.close()}
+              closeAction={
+                <DrawerClose
+                  aria-label="Close details"
+                  className="pressable absolute top-1.5 right-1.5 grid size-7 place-items-center rounded-concentric text-fg-3 transition-[filter,background-color,color] duration-150 [@media(hover:hover)]:hover:bg-hover [@media(hover:hover)]:hover:text-fg"
+                >
+                  <CloseIcon size={14} />
+                </DrawerClose>
+              }
+            />
+          ) : null}
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

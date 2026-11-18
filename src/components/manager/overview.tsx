@@ -1,27 +1,32 @@
 "use client";
 
+import { Meter, MeterIndicator, MeterLabel, MeterTrack, MeterValue } from "@ui-sdk/react/meter";
 import type { GuildDetail } from "@/lib/types";
 import { GuildIcon } from "../avatar";
 import type { KindConfig } from "./kinds";
 
 function Slots({ label, used, limit }: { label: string; used: number; limit: number }) {
-  const ratio = Math.min(1, used / limit);
+  const ratio = limit ? Math.min(1, used / limit) : 0;
   const tone = ratio >= 1 ? "bg-danger" : ratio >= 0.9 ? "bg-[oklch(0.78_0.14_65)]" : "bg-fg-2";
   return (
-    <div>
+    <Meter
+      value={used}
+      min={0}
+      max={Math.max(1, limit)}
+      getValueLabel={(v) => `${v} of ${limit} used`}
+    >
       <div className="flex h-6 items-center justify-between">
-        <span className="text-fg-2">{label}</span>
-        <span className="tabular text-fg-3">
+        <MeterLabel className="text-fg-2">{label}</MeterLabel>
+        <MeterValue className="tabular text-fg-3">
           <span className={ratio >= 1 ? "text-danger" : "text-fg"}>{used}</span> / {limit}
-        </span>
+        </MeterValue>
       </div>
-      <div className="mt-1 h-[3px] overflow-hidden rounded-full bg-line">
-        <div
-          className={`h-full origin-left rounded-full transition-transform duration-500 ease-[var(--ease-out)] ${tone}`}
-          style={{ transform: `scaleX(${ratio})` }}
+      <MeterTrack className="mt-1 h-[3px] w-full overflow-hidden rounded-full bg-line">
+        <MeterIndicator
+          className={`h-full rounded-full transition-[width] duration-500 ease-[var(--ease-out)] motion-reduce:transition-none ${tone}`}
         />
-      </div>
-    </div>
+      </MeterTrack>
+    </Meter>
   );
 }
 
@@ -53,7 +58,9 @@ export function Overview({
           </>
         )}
       </div>
-      <p className="text-[12px] leading-[18px] text-fg-3">Select {cfg.kind === "emote" ? "an emote" : "a sticker"} to edit or delete it. Drop or paste images anywhere to upload.</p>
+      <p className="text-[12px] leading-[18px] text-fg-3">
+        Select {cfg.kind === "emote" ? "an emote" : "a sticker"} to edit or delete it. Drop or paste images anywhere to upload.
+      </p>
     </div>
   );
 }

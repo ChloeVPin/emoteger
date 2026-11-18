@@ -1,4 +1,3 @@
-/** Page title on the left, its controls on the right. 44px on desktop; wraps on phones. */
 export function PageHeader({
   icon,
   title,
@@ -24,8 +23,7 @@ export function PageHeader({
   );
 }
 
-/** 28px controls for panel headers. */
 export const headerButton =
   "pressable inline-flex h-7 shrink-0 items-center justify-center gap-1.5 rounded-[7px] px-2 text-[13px] font-medium text-fg-2 " +
-  "transition-[filter,background-color,color] duration-150 data-popup-open:bg-hover data-popup-open:text-fg " +
+  "transition-[filter,background-color,color] duration-150 data-open:bg-hover data-open:text-fg " +
   "[@media(hover:hover)]:hover:bg-hover [@media(hover:hover)]:hover:text-fg";
