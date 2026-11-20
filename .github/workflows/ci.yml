@@ -21,7 +21,7 @@ jobs:
       BOT_TOKEN: ci-placeholder
       SESSION_SECRET: ci-placeholder-not-a-real-secret
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: oven-sh/setup-bun@v2
         with:
