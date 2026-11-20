@@ -12,7 +12,7 @@ const tileClass =
 
 const labelClass = "w-full truncate text-center text-[11px] leading-[14px] text-fg-3 transition-colors duration-120";
 
-function middle(name: string, max = 13) {
+export function middle(name: string, max = 13) {
   if (name.length <= max) return name;
   const head = Math.ceil((max - 1) / 2);
   return `${name.slice(0, head)}…${name.slice(name.length - (max - 1 - head))}`;

@@ -20,7 +20,7 @@ const sizes: Record<Size, string> = {
   lg: "h-10 rounded-[10px] px-4 text-[14px]",
 };
 
-export function buttonClass(variant: Variant = "quiet", size: Size = "md", extra = "") {
+function buttonClass(variant: Variant = "quiet", size: Size = "md", extra = "") {
   return `${base} ${variants[variant]} ${sizes[size]} ${extra}`;
 }
 
@@ -35,7 +35,7 @@ export function Button({
 
 export function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded-concentric px-1 font-sans text-[11px] font-medium text-fg-3 shadow-[inset_0_0_0_1px_var(--color-line-strong)]">
+    <kbd aria-hidden="true" className="inline-flex h-5 min-w-5 items-center justify-center rounded-concentric px-1 font-sans text-[11px] font-medium text-fg-3 shadow-[inset_0_0_0_1px_var(--color-line-strong)]">
       {children}
     </kbd>
   );

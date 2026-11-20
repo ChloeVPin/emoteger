@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { assertGuildAccess, createEmote } from "@/lib/discord";
-import { errorResponse } from "@/lib/http";
+import { assertGuildAccess, createEmote, isSnowflake } from "@/lib/discord";
+import { errorResponse, readJson, signedOut } from "@/lib/http";
 import { NAME_PATTERN } from "@/lib/names";
 import { getSession } from "@/lib/session";
 
@@ -9,12 +9,13 @@ const DATA_URI = /^data:image\/(png|jpeg|gif|webp|avif);base64,([A-Za-z0-9+/=]+)
 
 export async function POST(request: Request, ctx: RouteContext<"/api/guilds/[guildId]/emojis">) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Signed out" }, { status: 401 });
+  if (!session) return signedOut();
   const { guildId } = await ctx.params;
+  if (!isSnowflake(guildId)) return NextResponse.json({ error: "Unknown server" }, { status: 404 });
 
   try {
     await assertGuildAccess(session.accessToken, guildId);
-    const body = (await request.json()) as { name?: unknown; image?: unknown };
+    const body = await readJson(request);
     const name = typeof body.name === "string" ? body.name : "";
     const image = typeof body.image === "string" ? body.image : "";
     if (!NAME_PATTERN.test(name)) {

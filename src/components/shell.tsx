@@ -58,6 +58,7 @@ function ServerMenu({ guild, guilds }: Pick<Shell, "guild" | "guilds">) {
             value={g.id}
             label={g.name}
             render={<Link href={`/servers/${g.id}${sectionPath(section)}`} />}
+            aria-current={g.id === guild.id ? "page" : undefined}
             className={itemClass}
           >
             <GuildIcon guild={g} size={18} concentric />
@@ -196,14 +197,13 @@ function Sidebar({ user, guild, guilds, onNavigate }: Shell & { onNavigate?: () 
 
 function MobileBar({ hidden, ...props }: Shell & { hidden: boolean }) {
   const [drawer] = useState(createDrawerController);
-  const [open, setOpen] = useState(false);
   const path = usePathname();
   useEffect(() => {
     drawer.close();
   }, [path, drawer]);
 
   return (
-    <Drawer side="left" controller={drawer} open={open} onOpenChange={setOpen}>
+    <Drawer side="left" controller={drawer}>
       <div
         data-agent-hidden={hidden ? "" : undefined}
         className="sticky top-0 z-30 flex h-12 items-center gap-1 border-b border-line bg-base px-2 [padding-top:env(safe-area-inset-top)] lg:hidden"

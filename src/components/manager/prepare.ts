@@ -1,4 +1,4 @@
-export const MAX_BYTES = 256 * 1024;
+const MAX_BYTES = 256 * 1024;
 export const ACCEPT = ["image/png", "image/jpeg", "image/gif", "image/webp", "image/avif"];
 
 const toDataUri = (blob: Blob) =>
@@ -49,7 +49,7 @@ export async function prepareImage(file: File): Promise<{ image: string; animate
   throw new Error("Image is too large even after resizing");
 }
 
-export const STICKER_MAX_BYTES = 512 * 1024;
+const STICKER_MAX_BYTES = 512 * 1024;
 export const STICKER_ACCEPT = ["image/png", "image/apng", "image/gif", "image/jpeg", "image/webp", "image/avif"];
 const STICKER_EDGE = 320;
 

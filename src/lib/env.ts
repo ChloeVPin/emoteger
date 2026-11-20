@@ -19,6 +19,9 @@ export const env = {
   get sessionSecret() {
     return required("SESSION_SECRET");
   },
-  /** Optional. Falls back to the incoming request origin. */
-  appUrl: process.env.APP_URL,
+  /**
+   * Optional. Falls back to the incoming request origin. An empty value (as copied from
+   * .env.example) counts as unset, and a trailing slash is dropped so paths join cleanly.
+   */
+  appUrl: process.env.APP_URL?.replace(/\/+$/, "") || undefined,
 };

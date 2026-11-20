@@ -5,10 +5,10 @@ import type { AssetKind } from "@/lib/types";
 
 export type Section = AssetKind | "browse";
 
-const TABS: { kind: Section; label: string; path: string }[] = [
-  { kind: "emote", label: "Emotes", path: "" },
-  { kind: "sticker", label: "Stickers", path: "/stickers" },
-  { kind: "browse", label: "Browse", path: "/browse" },
+const TABS: { kind: Section; path: string }[] = [
+  { kind: "emote", path: "" },
+  { kind: "sticker", path: "/stickers" },
+  { kind: "browse", path: "/browse" },
 ];
 
 export const sectionPath = (s: Section) => TABS.find((t) => t.kind === s)!.path;

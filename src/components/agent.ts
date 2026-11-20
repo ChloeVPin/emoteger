@@ -9,8 +9,9 @@ const agent =
       })
     : null;
 
-if (agent && typeof window !== "undefined") {
-  Object.assign(window, { agent });
+if (agent) {
+  // window.agent is a console handle for trying the bridge by hand; production doesn't need it.
+  if (process.env.NODE_ENV !== "production") Object.assign(window, { agent });
   registerTools(agent, { allow: () => true });
 }
 

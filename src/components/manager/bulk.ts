@@ -15,9 +15,8 @@ export type Target = {
   key: string;
   id: string;
   name: string;
-  /** Imports only: where the emote comes from, and a small preview for the modal. */
+  /** Imports only: where the emote comes from. */
   source?: CatalogSource;
-  preview?: string;
 };
 
 export type BulkJob = {
@@ -47,7 +46,7 @@ const deletedListeners = new Set<(guildId: string, kind: AssetKind, id: string) 
 /** Ids deleted by bulk jobs this session, so a page that remounts doesn't show them again. */
 const deletedIds = new Set<string>();
 const addedListeners = new Set<(guildId: string, emote: Item, sourceKey: string) => void>();
-/** Catalog keys (`source:id`) imported this session, so Browse can mark them as added. */
+/** `guildId source:id` for catalog emotes imported this session, so Browse can mark them as added. */
 const importedKeys = new Set<string>();
 
 function set(patch: Partial<BulkJob> | null) {
@@ -95,7 +94,7 @@ async function run() {
         if (job.action === "import") {
           const result = await api.importEmote(guildId, target.source!, target.id, target.name);
           budget = result.budget;
-          importedKeys.add(target.key);
+          importedKeys.add(`${guildId} ${target.key}`);
           addedListeners.forEach((l) => l(guildId, { ...result.emote, key: result.emote.id }, target.key));
         } else {
           budget = await api.remove(kind, guildId, target.id);
@@ -154,7 +153,7 @@ export const bulk = {
     addedListeners.add(listener);
     return () => void addedListeners.delete(listener);
   },
-  wasImported: (key: string) => importedKeys.has(key),
+  wasImported: (guildId: string, key: string) => importedKeys.has(`${guildId} ${key}`),
   start() {
     if (!job || job.phase !== "confirm") return;
     set({ phase: "running" });

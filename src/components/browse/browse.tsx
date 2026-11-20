@@ -12,7 +12,7 @@ import {
 import { Meter, MeterIndicator, MeterLabel, MeterTrack, MeterValue } from "@ui-sdk/react/meter";
 import { useShortcut } from "@ui-sdk/react/shortcuts";
 import { toast } from "@ui-sdk/react/toast";
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { NAME_PATTERN, sanitizeName, uniqueName } from "@/lib/names";
 import {
   type AssetKind,
@@ -30,8 +30,19 @@ import { ArrowUpRightIcon, CheckIcon, ChevronsIcon, CompassIcon, PlusIcon } from
 import { bulk, useBulk } from "../manager/bulk";
 import { Segmented } from "../manager/segmented";
 import type { Filter, Item } from "../manager/types";
+import { middle } from "../manager/tile";
 import { useMediaQuery } from "../manager/use-media-query";
-import { Menu, MenuContent, MenuItem, MenuSeparator, MenuTrigger, itemClass, popupClass } from "../menu";
+import {
+  Menu,
+  MenuContent,
+  MenuItemIndicator,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuTrigger,
+  itemClass,
+  popupClass,
+} from "../menu";
 import { PageHeader, headerButton } from "../page-header";
 import { TileGrid, TileGridItem } from "../tile-grid-parts";
 import { PackDetails, PackGrid } from "./packs";
@@ -73,12 +84,6 @@ function reportBroken(item: CatalogItem) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ source: item.source, id: item.id }),
   }).catch(() => {});
-}
-
-function middle(name: string, max = 13) {
-  if (name.length <= max) return name;
-  const head = Math.ceil((max - 1) / 2);
-  return `${name.slice(0, head)}…${name.slice(name.length - (max - 1 - head))}`;
 }
 
 function CatalogTile({
@@ -146,8 +151,8 @@ function SkeletonGrid() {
     <ul aria-hidden className="grid grid-cols-[repeat(auto-fill,minmax(76px,1fr))] gap-1 sm:grid-cols-[repeat(auto-fill,minmax(88px,1fr))]">
       {Array.from({ length: 30 }, (_, i) => (
         <li key={i} className="flex aspect-square flex-col items-center justify-center gap-2">
-          <span className="size-11 animate-pulse rounded-[10px] bg-raised" style={{ animationDelay: `${(i % 6) * 80}ms` }} />
-          <span className="h-2 w-12 animate-pulse rounded-full bg-raised" style={{ animationDelay: `${(i % 6) * 80}ms` }} />
+          <span className="size-11 animate-pulse rounded-[10px] bg-raised motion-reduce:animate-none" style={{ animationDelay: `${(i % 6) * 80}ms` }} />
+          <span className="h-2 w-12 animate-pulse rounded-full bg-raised motion-reduce:animate-none" style={{ animationDelay: `${(i % 6) * 80}ms` }} />
         </li>
       ))}
     </ul>
@@ -172,9 +177,9 @@ function Slots({ label, used, adding, limit }: { label: string; used: number; ad
       </div>
       <MeterTrack className="relative mt-1 h-[3px] w-full overflow-hidden rounded-full bg-line">
         <MeterIndicator className="sr-only" />
-        <div className="absolute inset-y-0 left-0 rounded-full bg-fg-2 transition-[width] duration-300" style={{ width: pct(used) }} />
+        <div className="absolute inset-y-0 left-0 rounded-full bg-fg-2 transition-[width] duration-300 motion-reduce:transition-none" style={{ width: pct(used) }} />
         <div
-          className={`absolute inset-y-0 rounded-full transition-[left,width] duration-300 ${over > 0 ? "bg-danger" : "bg-fg-2/45"}`}
+          className={`absolute inset-y-0 rounded-full transition-[left,width] duration-300 motion-reduce:transition-none ${over > 0 ? "bg-danger" : "bg-fg-2/45"}`}
           style={{ left: pct(used), width: pct(Math.max(0, Math.min(adding, limit - used + Math.max(0, over)))) }}
         />
       </MeterTrack>
@@ -315,15 +320,18 @@ export function Browse({
     return () => io.disconnect();
   }, [state, nextPage, load]);
 
-  useEffect(() => {
-    setAdded(new Set([...items].map(keyOf).filter((k) => bulk.wasImported(k))));
-    return bulk.onAdded((gid, emote, key) => {
-      if (gid !== guild.id) return;
-      setAdded((prev) => new Set(prev).add(key));
-      const k = SOURCE_KIND[key.split(":")[0] as CatalogSource] ?? "emote";
-      setOwned((prev) => ({ ...prev, [k]: [...prev[k], { name: emote.name, animated: emote.animated }] }));
-    });
-  }, [guild.id]);
+  useEffect(
+    () =>
+      bulk.onAdded((gid, emote, key) => {
+        if (gid !== guild.id) return;
+        setAdded((prev) => new Set(prev).add(key));
+        const k = SOURCE_KIND[key.split(":")[0] as CatalogSource] ?? "emote";
+        setOwned((prev) => ({ ...prev, [k]: [...prev[k], { name: emote.name, animated: emote.animated }] }));
+      }),
+    [guild.id],
+  );
+  // Imports from an earlier visit live in the bulk store; `added` only tracks this mount's.
+  const isAdded = useCallback((key: string) => added.has(key) || bulk.wasImported(guild.id, key), [added, guild.id]);
 
   const markBroken = useCallback((item: CatalogItem) => {
     const key = keyOf(item);
@@ -370,7 +378,7 @@ export function Browse({
         if (!res.ok) return [];
         const page = (await res.json()) as CatalogPage;
         return page.items
-          .filter((i) => !broken.has(keyOf(i)) && !added.has(keyOf(i)))
+          .filter((i) => !broken.has(keyOf(i)) && !isAdded(keyOf(i)))
           .slice(0, 30)
           .map((i) => {
             seen.set(keyOf(i), i);
@@ -385,7 +393,7 @@ export function Browse({
       isSelected: (key) => selectedRef.current.has(key),
       showAll: (q) => setQuery(q),
     });
-  }, [source, query, filter, category, broken, added, toggle]);
+  }, [source, query, filter, category, broken, isAdded, toggle]);
 
   useShortcut("/", openSearch, {
     description: `Search ${SOURCE_NAME[source]}`,
@@ -405,7 +413,7 @@ export function Browse({
       let name = kind === "sticker" ? base : uniqueName(base, taken);
       for (let i = 2; kind === "sticker" && taken.has(name.toLowerCase()); i++) name = `${base.slice(0, 30 - String(i).length - 1)} ${i}`;
       taken.add(name.toLowerCase());
-      return { key: keyOf(item), id: item.id, name, source: item.source, preview: item.preview };
+      return { key: keyOf(item), id: item.id, name, source: item.source };
     });
     if (bulk.importNow({ guildId: guild.id, guildName: guild.name, kind, targets })) setSelected(new Map());
     else toast("Another job is still running", { description: "Wait for it to finish, then add these." });
@@ -460,30 +468,33 @@ export function Browse({
             <>
               <Segmented size="sm" label="Source" options={SOURCES[kind]} value={source} onChange={switchSource} />
               {source === "emojigg" ? (
-                <Menu
-                  onAction={(id) => {
-                    const chosen = categories.find((c) => c.id === id) ?? null;
-                    chooseCategory(id === "__all__" ? null : chosen);
-                  }}
-                >
+                <Menu>
                   <MenuTrigger aria-label="Category" className={`${headerButton} bg-raised pr-1.5 pl-2.5`}>
                     <span className="max-w-[14ch] truncate">{category?.name ?? "All categories"}</span>
                     <ChevronsIcon size={12} className="text-fg-3" />
                   </MenuTrigger>
                   <MenuContent sideOffset={6} align="start" className={`${popupClass} max-h-[min(380px,var(--available-height))] overflow-y-auto`}>
-                    {[{ id: "__all__", name: "All categories" } as CatalogCategory, ...categories].map((c) => (
-                      <div key={c.id}>
-                        {c.adult ? <MenuSeparator className="-mx-1 my-1 h-px bg-line" /> : null}
-                        <MenuItem value={c.id} label={c.name} className={itemClass}>
-                          <span className="flex-1">{c.name}</span>
-                          {c.adult ? (
-                            <span className="rounded-[4px] px-1 text-[11px] font-medium text-fg-3 shadow-[inset_0_0_0_1px_var(--color-line-strong)]">18+</span>
-                          ) : null}
-                          {c.count ? <span className="tabular text-[12px] text-fg-3">{c.count.toLocaleString()}</span> : null}
-                          {(category?.id ?? "__all__") === c.id ? <CheckIcon size={14} className="text-fg-2" /> : null}
-                        </MenuItem>
-                      </div>
-                    ))}
+                    {/* Controlled: an adult category only takes effect once the age prompt is answered. */}
+                    <MenuRadioGroup
+                      value={category?.id ?? "__all__"}
+                      onValueChange={(id) => chooseCategory(categories.find((c) => c.id === id) ?? null)}
+                    >
+                      {[{ id: "__all__", name: "All categories" } as CatalogCategory, ...categories].map((c) => (
+                        <Fragment key={c.id}>
+                          {c.adult ? <MenuSeparator className="-mx-1 my-1 h-px bg-line" /> : null}
+                          <MenuRadioItem value={c.id} label={c.name} closeOnSelect className={itemClass}>
+                            <span className="flex-1">{c.name}</span>
+                            {c.adult ? (
+                              <span className="rounded-[4px] px-1 text-[11px] font-medium text-fg-3 shadow-[inset_0_0_0_1px_var(--color-line-strong)]">18+</span>
+                            ) : null}
+                            {c.count ? <span className="tabular text-[12px] text-fg-3">{c.count.toLocaleString()}</span> : null}
+                            <MenuItemIndicator className="grid text-fg-2">
+                              <CheckIcon size={14} />
+                            </MenuItemIndicator>
+                          </MenuRadioItem>
+                        </Fragment>
+                      ))}
+                    </MenuRadioGroup>
                   </MenuContent>
                 </Menu>
               ) : null}
@@ -577,7 +588,7 @@ export function Browse({
                         item={item}
                         index={index}
                         selected={selected.has(keyOf(item))}
-                        added={added.has(keyOf(item))}
+                        added={isAdded(keyOf(item))}
                         onBroken={markBroken}
                         large={kind === "sticker"}
                       />

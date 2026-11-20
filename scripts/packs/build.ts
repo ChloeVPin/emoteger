@@ -7,8 +7,10 @@
  * 7TV: exact-name matches sorted by popularity; the version used in the most channels wins.
  * emoji.gg: exact title from our cached catalog, skipping images known to be dead, most-loved first.
  * Noto / Fluent: by name from their cached indexes.
+ *
+ * Catalog indexes are read from .cache/ (shared with the app) and fetched when missing.
  */
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { CatalogItem, Pack } from "../../src/lib/types";
@@ -16,6 +18,22 @@ import { PACKS, type SpecItem } from "./spec";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = async <T>(file: string) => JSON.parse(await readFile(path.join(ROOT, file), "utf8")) as T;
+
+/**
+ * A catalog index from .cache/, fetched and saved when missing (e.g. on a fresh clone).
+ * Must write the same shape as the app's own copy (src/lib/catalog/*), since the app reads these files too.
+ */
+async function cached<T>(file: string, url: string, shrink: (raw: unknown) => T = (r) => r as T): Promise<T> {
+  const hit = await read<T>(file).catch(() => null);
+  if (hit) return hit;
+  console.log(`  fetching ${url}`);
+  const res = await fetch(url, { headers: { "User-Agent": "Emoteger pack builder" } });
+  if (!res.ok) throw new Error(`${url} responded ${res.status}`);
+  const data = shrink(await res.json());
+  await mkdir(path.dirname(path.join(ROOT, file)), { recursive: true });
+  await writeFile(path.join(ROOT, file), JSON.stringify(data));
+  return data;
+}
 
 const HIDDEN_FLAGS = (1 << 16) | (1 << 17) | (1 << 18) | (1 << 24);
 
@@ -111,7 +129,8 @@ async function sevenTvOnce(name: string, animated?: boolean): Promise<CatalogIte
       variables: { q: name },
     }),
   });
-  const body = (await res.json()) as {
+  if (res.status === 429) return "rate-limited";
+  const body = (await res.json().catch(() => ({}))) as {
     errors?: { message: string }[];
     data?: { emotes: { items: { id: string; name: string; animated: boolean; flags: number; owner: { display_name: string } | null; channels: { total: number } }[] } };
   };
@@ -137,7 +156,7 @@ let egg: EggRaw[] | null = null;
 let health: Record<string, { ok: boolean; animated?: boolean }> = {};
 
 async function emojigg(name: string, animated?: boolean): Promise<CatalogItem | null> {
-  egg ??= await read<EggRaw[]>(".cache/emojigg/catalog.json");
+  egg ??= await cached<EggRaw[]>(".cache/emojigg/catalog.json", "https://emoji.gg/api/");
   const candidates = egg
     .filter((e) => e.title.toLowerCase() === name.toLowerCase() && e.category !== 9)
     .filter((e) => health[`emojigg:${e.id}`]?.ok !== false)
@@ -162,7 +181,7 @@ let noto: NotoRaw | null = null;
 const title = (s: string) => s.replace(/[:_-]+/g, " ").trim().replace(/\b\w/g, (c) => c.toUpperCase());
 
 async function notoItem(tag: string): Promise<CatalogItem | null> {
-  noto ??= await read<NotoRaw>(".cache/noto-index.json");
+  noto ??= await cached<NotoRaw>(".cache/noto-index.json", "https://googlefonts.github.io/noto-emoji-animation/data/api.json");
   const icon = noto.icons.find((i) => i.tags.some((t) => t.replace(/:/g, "") === tag));
   if (!icon) return null;
   const base = `https://fonts.gstatic.com/s/e/notoemoji/latest/${icon.codepoint}`;
@@ -182,7 +201,14 @@ type FluentEntry = { id: string; path: string };
 let fluent: FluentEntry[] | null = null;
 
 async function fluentItem(name: string): Promise<CatalogItem | null> {
-  fluent ??= await read<FluentEntry[]>(".cache/fluent-index.json");
+  // Same filter as src/lib/catalog/fluent.ts: the 3D image of each emoji.
+  fluent ??= await cached(".cache/fluent-index.json", "https://api.github.com/repos/microsoft/fluentui-emoji/git/trees/main?recursive=1", (raw) =>
+    ((raw as { tree?: { path: string }[] }).tree ?? [])
+      .map((t) => /^assets\/([^/]+)\/(?:Default\/)?3D\/[^/]+\.png$/.exec(t.path))
+      .filter((m): m is RegExpExecArray => Boolean(m))
+      .map((m) => ({ id: m[1]!, path: m[0], lower: m[1]!.toLowerCase() }))
+      .sort((a, b) => a.id.localeCompare(b.id)),
+  );
   const e = fluent.find((x) => x.id.toLowerCase() === name.toLowerCase());
   if (!e) return null;
   return {
@@ -218,6 +244,7 @@ async function loads(url: string) {
   return Boolean(res && res.ok && (res.headers.get("content-type") ?? "").startsWith("image/"));
 }
 
+await mkdir(path.join(ROOT, ".cache"), { recursive: true });
 health = await read<typeof health>(".cache/image-health.json").catch(() => ({}));
 memo = await read<typeof memo>(".cache/pack-resolve.json").catch(() => ({}));
 const out: Pack[] = [];

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { stickerRules } from "@/lib/names";
 import { Button } from "../button";
 import { CloseIcon, CopyIcon, DownloadIcon, LinkIcon } from "../icons";
-import { SwapIcon, copyText, quietButton, useFlash } from "./copy-button";
+import { SwapIcon, copyText, useFlash } from "./copy-button";
 import { HoldToDelete } from "./hold-button";
 import { FORMAT_LABEL, type KindConfig } from "./kinds";
 import type { Fields, Item } from "./types";
@@ -35,10 +35,10 @@ function Row({ label, value, mono, copy }: { label: string; value: string; mono?
   const [done, flash] = useFlash();
   const content = (
     <>
-      <dt className="w-[76px] shrink-0 text-left font-normal text-fg-3">{label}</dt>
-      <dd title={value} className={`min-w-0 flex-1 truncate text-left font-normal text-fg ${mono ? "font-mono text-[12px]" : ""}`}>
+      <span className="w-[76px] shrink-0 text-left font-normal text-fg-3">{label}</span>
+      <span title={value} className={`min-w-0 flex-1 truncate text-left font-normal text-fg ${mono ? "font-mono text-[12px]" : ""}`}>
         {value}
-      </dd>
+      </span>
       {copy !== undefined ? (
         <span
           data-done={done || undefined}
@@ -53,7 +53,7 @@ function Row({ label, value, mono, copy }: { label: string; value: string; mono?
   return copy !== undefined ? (
     <Button
       variant="ghost"
-      aria-label={`Copy ${label.toLowerCase()}`}
+      aria-label={`Copy ${label.toLowerCase()}, ${value}`}
       onClick={() => copyText(copy, flash)}
       className={`${shape} group !justify-start !px-2 !text-[13px]`}
     >
@@ -242,7 +242,7 @@ export function Inspector({
         ) : null}
       </Field>
 
-      <dl className="-mx-2 mt-3 flex flex-col">
+      <div className="-mx-2 mt-3 flex flex-col">
         {sticker && item.id ? (
           <>
             <EditRow
@@ -267,14 +267,14 @@ export function Inspector({
         {item.addedBy ? <Row label="Added by" value={item.addedBy.name} /> : null}
         {item.id && cfg.markdown ? <Row label="Markdown" value={cfg.markdown(item)} mono copy={cfg.markdown(item)} /> : null}
         {item.id ? <Row label="ID" value={item.id} mono copy={item.id} /> : null}
-      </dl>
+      </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
         <Button
           variant="quiet"
           disabled={!item.id}
           onClick={() => copyText(cfg.downloadUrl(item), flashLink)}
-          className={quietButton}
+          className="min-w-0"
         >
           <SwapIcon done={linkCopied} icon={<LinkIcon size={15} className="text-fg-3" />} />
           <span className="truncate">Copy link</span>
@@ -284,7 +284,7 @@ export function Inspector({
           disabled={!item.id}
           pendingAnnouncement="Downloading"
           onClick={() => download(cfg, item)}
-          className={quietButton}
+          className="min-w-0"
         >
           <DownloadIcon size={15} className="shrink-0 text-fg-3" />
           <span className="truncate">Download</span>

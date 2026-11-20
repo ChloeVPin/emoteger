@@ -1,8 +1,21 @@
+# dependencies
 node_modules
+
+# next.js
 .next
-.env
-.env*.local
-*.tsbuildinfo
+out
 next-env.d.ts
-.DS_Store
+*.tsbuildinfo
+
+# env files (the example is committed)
+.env*
+!.env.example
+
+# local catalog cache, written at runtime
 .cache
+
+# misc
+coverage
+.vercel
+*.log
+.DS_Store

@@ -100,7 +100,7 @@ export function Library({
       const used = { static: 0, animated: 0 };
       live.forEach((i) => used[i.animated ? "animated" : "static"]++);
 
-      const jobs: { key: string; name: string; image: string }[] = [];
+      const jobs: { key: string; name: string; image: string; preview: string }[] = [];
       const full = (animated: boolean) => (cfg.pooled ? used.static + used.animated : used[animated ? "animated" : "static"]) >= limit;
       for (const file of images) {
         let prepared: Awaited<ReturnType<typeof cfg.prepare>>;
@@ -121,7 +121,8 @@ export function Library({
         const key = `upload-${crypto.randomUUID()}`;
         fresh.add(key);
         window.setTimeout(() => fresh.delete(key), 1000);
-        jobs.push({ key, name, image: prepared.image });
+        const preview = URL.createObjectURL(file);
+        jobs.push({ key, name, image: prepared.image, preview });
         const pending: Item = {
           key,
           id: "",
@@ -133,7 +134,7 @@ export function Library({
           available: true,
           managed: false,
           addedBy: { id: user.id, name: user.globalName ?? user.username },
-          preview: URL.createObjectURL(file),
+          preview,
           status: "uploading",
         };
         setItems((prev) => [...prev, pending]);
@@ -145,7 +146,7 @@ export function Library({
       requestAnimationFrame(() =>
         gridRef.current
           ?.querySelector(`[data-key="${jobs[0]!.key}"]`)
-          ?.scrollIntoView({ block: "nearest", behavior: "smooth" }),
+          ?.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }),
       );
 
       let added = 0;
@@ -160,6 +161,7 @@ export function Library({
           setItems((prev) => prev.map((i) => (i.key === job.key ? { ...created, key: job.key, preview: i.preview } : i)));
         } catch (error) {
           setItems((prev) => prev.filter((i) => i.key !== job.key));
+          URL.revokeObjectURL(job.preview);
           toast.error(`Couldn't add ${cfg.quote(job.name)}`, { description: (error as Error).message });
         }
       }

@@ -17,7 +17,7 @@ export class RequestFailed extends Error {
   }
 }
 
-export type Budget = { remaining: number | null; resetAfter: number | null };
+type Budget = { remaining: number | null; resetAfter: number | null };
 
 async function send(url: string, init: RequestInit) {
   const res = await fetch(url, { ...init, headers: { "Content-Type": "application/json" } });

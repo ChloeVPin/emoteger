@@ -1,23 +1,24 @@
 import { NextResponse } from "next/server";
 import { download, emoteImage, stickerFile } from "@/lib/catalog/convert";
 import { resolveCatalogImage as resolve } from "@/lib/catalog/resolve";
-import { DiscordError, type RateState, assertGuildAccess, createEmote, createSticker } from "@/lib/discord";
-import { errorResponse } from "@/lib/http";
+import { DiscordError, type RateState, assertGuildAccess, createEmote, createSticker, isSnowflake } from "@/lib/discord";
+import { HttpError, errorResponse, rateHeaders, readJson, signedOut } from "@/lib/http";
 import { NAME_PATTERN, sanitizeName, stickerRules } from "@/lib/names";
 import { getSession } from "@/lib/session";
-import { SOURCE_KIND } from "@/lib/types";
+import { SOURCE_KIND, isCatalogSource } from "@/lib/types";
 
 export async function POST(request: Request, ctx: RouteContext<"/api/guilds/[guildId]/import">) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Signed out" }, { status: 401 });
+  if (!session) return signedOut();
   const { guildId } = await ctx.params;
+  if (!isSnowflake(guildId)) return NextResponse.json({ error: "Unknown server" }, { status: 404 });
 
   try {
     await assertGuildAccess(session.accessToken, guildId);
-    const body = (await request.json()) as { source?: unknown; id?: unknown; name?: unknown };
+    const body = await readJson(request);
     const id = typeof body.id === "string" ? body.id.slice(0, 64) : "";
-    const source = (["emojigg", "7tv", "noto", "fluent"] as const).find((s) => s === body.source);
-    if (!source || !id) return NextResponse.json({ error: "Unknown item" }, { status: 400 });
+    const source = body.source;
+    if (!isCatalogSource(source) || !id) return NextResponse.json({ error: "Unknown item" }, { status: 400 });
 
     const found = await resolve(source, id);
     if (!found || !found.urls.length) return NextResponse.json({ error: "That item isn't available anymore" }, { status: 404 });
@@ -36,12 +37,9 @@ export async function POST(request: Request, ctx: RouteContext<"/api/guilds/[gui
       ({ emote: created, rate } = await createEmote(guildId, name, await emoteImage(raw), session.user.username, { retry: false }));
     }
 
-    const headers = new Headers();
-    if (rate.remaining !== null) headers.set("x-ratelimit-remaining", String(rate.remaining));
-    if (rate.resetAfter !== null) headers.set("x-ratelimit-reset-after", String(rate.resetAfter));
-    return NextResponse.json(created, { status: 201, headers });
+    return NextResponse.json(created, { status: 201, headers: rateHeaders(rate) });
   } catch (error) {
-    if (error instanceof DiscordError) return errorResponse(error);
+    if (error instanceof DiscordError || error instanceof HttpError) return errorResponse(error);
     // Download and resize problems are specific and useful, so say what they were.
     console.error(error);
     return NextResponse.json({ error: (error as Error).message || "Couldn't import" }, { status: 422 });

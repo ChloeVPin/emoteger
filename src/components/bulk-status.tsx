@@ -147,7 +147,7 @@ function Body({ job }: { job: BulkJob }) {
         ) : job.failures.length ? (
           <>
             <p className="text-danger">
-              {job.failures.length} couldn&rsquo;t be deleted · {job.failures[0]!.reason}
+              {job.failures.length} couldn&rsquo;t be {verb} · {job.failures[0]!.reason}
             </p>
             <p
               className="mt-0.5 line-clamp-2 text-[12px] text-fg-3"
@@ -193,7 +193,7 @@ function Ring({ value, waiting }: { value: number; waiting: boolean }) {
         strokeLinecap="round"
         strokeDasharray={c}
         strokeDashoffset={c * (1 - value)}
-        style={{ transition: "stroke-dashoffset 300ms var(--ease-out), stroke 150ms ease" }}
+        className="transition-[stroke-dashoffset,stroke] duration-300 ease-[var(--ease-out)] motion-reduce:transition-none"
       />
     </svg>
   );

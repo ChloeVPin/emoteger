@@ -13,9 +13,9 @@ export type SessionUser = {
   avatar: string | null;
 };
 
+/** Sealed into an encrypted cookie. Sessions end when the access token does; there's no refresh. */
 export type Session = {
   accessToken: string;
-  refreshToken: string;
   expiresAt: number;
   user: SessionUser;
 };

@@ -12,6 +12,12 @@ const PERM_CREATE_GUILD_EXPRESSIONS = 1n << 43n;
 const SLOT_LIMITS = [50, 100, 150, 250] as const;
 const STICKER_LIMITS = [5, 15, 30, 60] as const;
 
+/** Longest 429 we wait out on the server; longer waits go back to the client as a 429. */
+const MAX_RETRY_WAIT = 10;
+
+/** Discord ids are numeric snowflakes. Checked before an id from a URL goes into an API path. */
+export const isSnowflake = (id: string) => /^\d{17,20}$/.test(id);
+
 export class DiscordError extends Error {
   constructor(
     public status: number,
@@ -64,7 +70,7 @@ async function request<T>(
   if (res.status === 429) {
     const body = (await res.json().catch(() => ({}))) as { retry_after?: number; message?: string };
     const retryAfter = body.retry_after ?? Number(res.headers.get("retry-after") ?? 1);
-    if (opts.retry !== false && attempt < 3) {
+    if (opts.retry !== false && attempt < 3 && retryAfter <= MAX_RETRY_WAIT) {
       await new Promise((r) => setTimeout(r, Math.ceil(retryAfter * 1000)));
       return request<T>(path, auth, init, opts, attempt + 1);
     }
@@ -86,7 +92,14 @@ async function request<T>(
 }
 
 const bot = <T>(path: string, init?: RequestInit, opts?: RequestOptions) =>
-  request<T>(path, `Bot ${env.botToken}`, init, opts);
+  request<T>(path, `Bot ${env.botToken}`, init, opts).catch((error: unknown) => {
+    // A 401 here means BOT_TOKEN is wrong, not that the user's session expired, so it
+    // mustn't look like one (that would sign the user out).
+    if (error instanceof DiscordError && error.status === 401) {
+      throw new DiscordError(502, "Discord rejected the bot token. Check BOT_TOKEN.");
+    }
+    throw error;
+  });
 const user = <T>(token: string, path: string) => request<T>(path, `Bearer ${token}`);
 
 export function authorizeUrl(redirectUri: string, state: string) {
@@ -124,9 +137,10 @@ export async function exchangeCode(code: string, redirectUri: string) {
       client_secret: env.clientSecret,
     }),
     cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
   });
   if (!res.ok) throw new DiscordError(res.status, "Token exchange failed");
-  return (await res.json()) as { access_token: string; refresh_token: string; expires_in: number };
+  return (await res.json()) as { access_token: string; expires_in: number };
 }
 
 export async function revokeToken(token: string) {
@@ -139,6 +153,8 @@ export async function revokeToken(token: string) {
       client_id: env.clientId,
       client_secret: env.clientSecret,
     }),
+    // Best effort: signing out shouldn't hang on Discord.
+    signal: AbortSignal.timeout(5000),
   }).catch(() => {});
 }
 
@@ -152,8 +168,11 @@ const userGuildCache = new Map<string, { at: number; value: Promise<RawPartialGu
 let botGuildCache: { at: number; value: Promise<Set<string>> } | null = null;
 
 function userGuilds(token: string) {
+  const now = Date.now();
   const hit = userGuildCache.get(token);
-  if (hit && Date.now() - hit.at < TTL) return hit.value;
+  if (hit && now - hit.at < TTL) return hit.value;
+  // Keyed by access token, so drop stale entries rather than keep every past token in memory.
+  for (const [key, entry] of userGuildCache) if (now - entry.at >= TTL) userGuildCache.delete(key);
   const value = user<RawPartialGuild[]>(token, "/users/@me/guilds");
   value.catch(() => userGuildCache.delete(token));
   userGuildCache.set(token, { at: Date.now(), value });

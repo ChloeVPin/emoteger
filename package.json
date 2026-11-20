@@ -1,13 +1,25 @@
 {
   "name": "emoteger",
+  "description": "Self-hosted web app for managing a Discord server's emotes and stickers.",
   "private": true,
   "license": "MIT",
+  "homepage": "https://github.com/ChloeVPin/emoteger#readme",
+  "bugs": {
+    "url": "https://github.com/ChloeVPin/emoteger/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChloeVPin/emoteger.git"
+  },
+  "engines": {
+    "bun": ">=1.4"
+  },
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "packs": "bun scripts/packs/build.ts"
   },
   "dependencies": {

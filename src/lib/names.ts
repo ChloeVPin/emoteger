@@ -3,7 +3,9 @@ export const NAME_PATTERN = /^[A-Za-z0-9_]{2,32}$/;
 export function sanitizeName(raw: string) {
   const base = raw
     .replace(/\.[^.]+$/, "")
+    // Split accented letters and drop the accents, so "café" becomes "cafe", not "caf_".
     .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
     .replace(/[^\w]+/g, "_")
     .replace(/^_+|_+$/g, "")
     .slice(0, 32);

@@ -47,6 +47,9 @@ export type CatalogSource = "emojigg" | "7tv" | "noto" | "fluent";
 /** Which Discord asset a catalog fills: emote sources vs. sticker sources. */
 export const SOURCE_KIND: Record<CatalogSource, AssetKind> = { emojigg: "emote", "7tv": "emote", noto: "sticker", fluent: "sticker" };
 
+export const isCatalogSource = (value: unknown): value is CatalogSource =>
+  typeof value === "string" && Object.hasOwn(SOURCE_KIND, value);
+
 export type CatalogItem = {
   source: CatalogSource;
   id: string;

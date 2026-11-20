@@ -13,7 +13,8 @@ export async function GET(request: Request) {
   const expected = jar.get(STATE_COOKIE)?.value;
 
   if (!code || !state || state !== expected) {
-    const response = NextResponse.redirect(`${origin}/?error=${url.searchParams.get("error") ?? "state"}`);
+    const error = url.searchParams.get("error") ?? "state";
+    const response = NextResponse.redirect(`${origin}/?error=${encodeURIComponent(error)}`);
     response.cookies.delete(STATE_COOKIE);
     return response;
   }
@@ -24,7 +25,6 @@ export async function GET(request: Request) {
     const expiresAt = Date.now() + token.expires_in * 1000;
     const sealed = await sealSession({
       accessToken: token.access_token,
-      refreshToken: token.refresh_token,
       expiresAt,
       user: { id: me.id, username: me.username, globalName: me.global_name, avatar: me.avatar },
     });

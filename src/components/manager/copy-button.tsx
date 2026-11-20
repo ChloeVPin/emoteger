@@ -44,8 +44,3 @@ export async function copyText(text: string, flash: () => void) {
     toast.error("Couldn't copy");
   }
 }
-
-export const quietButton =
-  "pressable inline-flex h-8 min-w-0 items-center justify-center gap-1.5 rounded-[8px] px-3 text-[13px] font-medium text-fg " +
-  "bg-raised transition-[filter,background-color] duration-150 disabled:opacity-40 data-disabled:opacity-40 " +
-  "[@media(hover:hover)]:hover:bg-overlay";

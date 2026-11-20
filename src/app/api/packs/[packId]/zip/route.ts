@@ -2,6 +2,7 @@ import { strToU8, zipSync } from "fflate";
 import { NextResponse } from "next/server";
 import { download, emoteBytes, stickerFile } from "@/lib/catalog/convert";
 import { resolveCatalogImage } from "@/lib/catalog/resolve";
+import { signedOut } from "@/lib/http";
 import { getPack } from "@/lib/packs";
 import { getSession } from "@/lib/session";
 
@@ -17,9 +18,8 @@ const LICENSES: Record<string, string> = {
  * (GIF for animation, within Discord's size limits), plus a README with lore and credits.
  */
 export async function GET(_request: Request, ctx: RouteContext<"/api/packs/[packId]/zip">) {
-  if (!(await getSession()) && process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Signed out" }, { status: 401 });
-  }
+  // Like the catalog, open to the dev harness and signed-in only in production.
+  if (!(await getSession()) && process.env.NODE_ENV === "production") return signedOut();
   const { packId } = await ctx.params;
   const pack = getPack(packId);
   if (!pack) return NextResponse.json({ error: "Unknown pack" }, { status: 404 });
@@ -39,8 +39,10 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/packs/[pack
           const found = await resolveCatalogImage(item.source, item.id);
           if (!found?.urls[0]) throw new Error("unavailable");
           const raw = await download(found.urls[0]);
-          let base = item.name.replace(/[^\w\- ]+/g, "").trim() || item.id;
-          for (let i = 2; used.has(base.toLowerCase()); i++) base = `${item.name}_${i}`;
+          // Only the cleaned name goes into a zip path, so a name can never add folders.
+          const clean = item.name.replace(/[^\w\- ]+/g, "").trim() || item.id.replace(/[^\w-]+/g, "");
+          let base = clean;
+          for (let i = 2; used.has(base.toLowerCase()); i++) base = `${clean}_${i}`;
           used.add(base.toLowerCase());
           if (pack.kind === "sticker") {
             const { blob, filename } = await stickerFile(raw);

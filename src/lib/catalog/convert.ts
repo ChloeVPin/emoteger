@@ -20,7 +20,7 @@ export async function download(url: string) {
 }
 
 /** The real format, from the bytes. Hosts mislabel files (emoji.gg serves some GIFs as .png). */
-export function sniff(bytes: Buffer): "gif" | "png" | "apng" | "webp" | "jpeg" | null {
+function sniff(bytes: Buffer): "gif" | "png" | "apng" | "webp" | "jpeg" | null {
   if (bytes.subarray(0, 4).toString("latin1") === "GIF8") return "gif";
   if (bytes[0] === 0x89 && bytes.subarray(1, 4).toString("latin1") === "PNG") return isApng(bytes) ? "apng" : "png";
   if (bytes.subarray(0, 4).toString("latin1") === "RIFF" && bytes.subarray(8, 12).toString("latin1") === "WEBP") return "webp";

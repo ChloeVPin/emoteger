@@ -22,7 +22,9 @@ export function HoldToDelete({
 }) {
   const ref = useRef<HTMLButtonElement>(null);
   const confirmRef = useRef(onConfirm);
-  confirmRef.current = onConfirm;
+  useEffect(() => {
+    confirmRef.current = onConfirm;
+  });
 
   useEffect(() => {
     const el = ref.current;

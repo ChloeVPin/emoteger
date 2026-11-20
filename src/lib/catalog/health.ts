@@ -1,6 +1,7 @@
 import "server-only";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { CACHE_DIR, writeCacheFile } from "./disk";
 
 /*
   Some catalog entries point at images their host no longer has (emoji.gg answers 403
@@ -9,23 +10,24 @@ import path from "node:path";
 */
 
 /** `animated` comes from the file's own bytes, since catalogs only tell us an extension. */
-type Record = { ok: boolean; at: number; animated?: boolean };
+type Health = { ok: boolean; at: number; animated?: boolean };
 
-const FILE = path.join(process.cwd(), ".cache", "image-health.json");
+const FILE = path.join(CACHE_DIR, "image-health.json");
 const RECHECK_DEAD = 24 * 60 * 60 * 1000; // hosts sometimes restore files
 const RECHECK_OK = 7 * 24 * 60 * 60 * 1000;
 const CONCURRENCY = 6;
 
-let records: Map<string, Record> | null = null;
-let loading: Promise<Map<string, Record>> | null = null;
+let records: Map<string, Health> | null = null;
+let loading: Promise<Map<string, Health>> | null = null;
 let dirty = false;
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
 function load() {
   if (records) return Promise.resolve(records);
   loading ??= readFile(FILE, "utf8")
-    .then((text) => new Map(Object.entries(JSON.parse(text) as { [key: string]: Record })))
-    .catch(() => new Map<string, Record>())
+    .then((text) => new Map(Object.entries(JSON.parse(text) as Record<string, Health>)))
+    // Missing (fresh clone) or unreadable: start empty and rebuild as images get checked.
+    .catch(() => new Map<string, Health>())
     .then((map) => (records = map));
   return loading;
 }
@@ -37,8 +39,10 @@ function scheduleSave() {
     saveTimer = null;
     if (!dirty || !records) return;
     dirty = false;
-    await mkdir(path.dirname(FILE), { recursive: true });
-    await writeFile(FILE, JSON.stringify(Object.fromEntries(records)));
+    // Losing a save only means some images get checked again, so never let it throw.
+    await writeCacheFile(FILE, JSON.stringify(Object.fromEntries(records))).catch((error) =>
+      console.error("Couldn't save image health", error),
+    );
   }, 2000);
 }
 
@@ -46,7 +50,7 @@ function scheduleSave() {
  * Reads the start of an image to tell whether it really animates:
  * GIF with more than one frame (or a loop block), PNG with an animation chunk (APNG), WebP with ANIM.
  */
-export function sniffAnimated(bytes: Uint8Array): boolean | undefined {
+function sniffAnimated(bytes: Uint8Array): boolean | undefined {
   const ascii = new TextDecoder("latin1").decode(bytes);
   if (ascii.startsWith("GIF8")) return ascii.includes("NETSCAPE2.0") || ascii.split("\x21\xf9\x04").length > 2;
   if (ascii.startsWith("\x89PNG")) return ascii.includes("acTL");

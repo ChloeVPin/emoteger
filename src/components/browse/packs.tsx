@@ -81,7 +81,7 @@ export function PackDetails({
   const mine = owned[pack.kind];
   const taken = useMemo(() => new Set(mine.map((e) => e.name.toLowerCase())), [mine]);
 
-  const toAdd = pack.items.filter((i) => !taken.has(i.name.toLowerCase()));
+  const toAdd = useMemo(() => pack.items.filter((i) => !taken.has(i.name.toLowerCase())), [pack.items, taken]);
   const skipped = pack.items.length - toAdd.length;
 
   const room = useMemo(() => {
@@ -109,7 +109,7 @@ export function PackDetails({
         name = uniqueName(NAME_PATTERN.test(item.name) ? item.name : sanitizeName(item.name), names);
       }
       names.add(name.toLowerCase());
-      return { key: `${item.source}:${item.id}`, id: item.id, name, source: item.source, preview: item.preview };
+      return { key: `${item.source}:${item.id}`, id: item.id, name, source: item.source };
     });
     bulk.importNow({ guildId: guild.id, guildName: guild.name, kind: pack.kind, targets });
   };

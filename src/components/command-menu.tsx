@@ -15,7 +15,7 @@ import {
 import { Dialog, DialogBackdrop, DialogContent, DialogTitle } from "@ui-sdk/react/dialog";
 import { useShortcut } from "@ui-sdk/react/shortcuts";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { Fragment, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { GuildSummary } from "@/lib/types";
 import { GuildIcon } from "./avatar";
 import { Button } from "./button";
@@ -305,10 +305,10 @@ export function CommandMenu({ guildId, guilds }: { guildId: string; guilds: Guil
                 {scopedRows
                   .filter((r) => !r.group)
                   .map((r) => (
-                    <div key={r.id}>
+                    <Fragment key={r.id}>
                       {scopedRows.length > 1 ? <CommandSeparator className="-mx-1.5 my-1.5 h-px bg-line" /> : null}
                       {renderItem(r)}
-                    </div>
+                    </Fragment>
                   ))}
               </>
             ) : (

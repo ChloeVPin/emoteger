@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { assertGuildAccess, createSticker } from "@/lib/discord";
-import { errorResponse } from "@/lib/http";
+import { assertGuildAccess, createSticker, isSnowflake } from "@/lib/discord";
+import { errorResponse, readJson, signedOut } from "@/lib/http";
 import { stickerRules } from "@/lib/names";
 import { getSession } from "@/lib/session";
 
@@ -9,12 +9,13 @@ const DATA_URI = /^data:image\/(png|apng|gif);base64,([A-Za-z0-9+/=]+)$/;
 
 export async function POST(request: Request, ctx: RouteContext<"/api/guilds/[guildId]/stickers">) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: "Signed out" }, { status: 401 });
+  if (!session) return signedOut();
   const { guildId } = await ctx.params;
+  if (!isSnowflake(guildId)) return NextResponse.json({ error: "Unknown server" }, { status: 404 });
 
   try {
     await assertGuildAccess(session.accessToken, guildId);
-    const body = (await request.json()) as Record<string, unknown>;
+    const body = await readJson(request);
     const name = typeof body.name === "string" ? body.name.trim() : "";
     const description = typeof body.description === "string" ? body.description.trim() : "";
     const tags = typeof body.tags === "string" ? body.tags.trim() : "";

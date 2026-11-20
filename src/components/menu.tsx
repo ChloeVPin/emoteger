@@ -3,8 +3,6 @@
 import {
   Menu,
   MenuContent,
-  MenuGroup,
-  MenuGroupLabel,
   MenuItem,
   MenuItemIcon,
   MenuItemIndicator,
@@ -27,8 +25,6 @@ export const itemClass =
 export {
   Menu,
   MenuContent,
-  MenuGroup,
-  MenuGroupLabel,
   MenuItem,
   MenuItemIcon,
   MenuItemIndicator,
